@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const rawDataPath = "../";
+const rawDataPath = "../../data/";
 
 const dataPath = path.join(__dirname, rawDataPath);
 const usersPath = path.join(__dirname, rawDataPath + "/users/");
@@ -15,6 +15,8 @@ const taskPath = path.join(__dirname, rawDataPath + "/task/");
 const deleteBroadcastImage = (broadcastID, type, callback) => {
     fs.unlink(broadcastsPath + broadcastID + "." + type, (err) => {
         callback();
+
+        
     });
 }
 
