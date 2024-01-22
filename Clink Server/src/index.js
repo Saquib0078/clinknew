@@ -16,6 +16,7 @@ const adminRoute = require('./routes/adminRoutes')
 const mediaRoute = require('./routes/mediaRoutes')
 const meetingRoute=require('./routes/meetingRoutes')
 const TaskRoute=require('./routes/taskRoutes')
+const GraphicsRouts=require('./routes/graphicsRoutes')
 
 
 const databaseManager = require("./managers/databaseManager");
@@ -36,6 +37,8 @@ app.use('/admin', adminRoute);
 app.use('/media', mediaRoute);
 app.use('/meeting', meetingRoute);
 app.use('/task', TaskRoute);
+app.use('/graphics', GraphicsRouts);
+
 
 
 

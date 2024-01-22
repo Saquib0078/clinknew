@@ -22,10 +22,10 @@ const CreateTask = async (req, res) => {
            taskDescription,
             time,
             date,
-            imageID:imageID.filename
+            imageID:imageID.filename,
+            createdBy:req.user._id
         };
-
-
+          
         const createMeet = await TaskModel.create(taskDetails);
         return res.status(200).json({ status: "success", data: createMeet,id:createMeet._id });
     } catch (error) {

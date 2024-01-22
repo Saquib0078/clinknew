@@ -15,7 +15,9 @@ const meeting = async (req, res) => {
             meetDescription,
             time,
             date,
-            imageID:imageID.filename
+            imageID:imageID.filename,
+            createdBy:req.user._id
+
         };
 
 

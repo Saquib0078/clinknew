@@ -8,9 +8,12 @@ const meetSchema = new mongoose.Schema({
     live: {type: Boolean, default: true},
     date: {type: String},
     imageID: {type: String},
+    createdBy:{type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'}
 
 },{
     timestamps: true
 });
+
 
 module.exports = mongoose.model("meeting", meetSchema);

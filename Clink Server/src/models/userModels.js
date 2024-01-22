@@ -20,7 +20,8 @@ const primaryUserSchema = new mongoose.Schema({
     /** When User Complete Filling Up the Basic Info Then it will become true  */
     completed: {type: Boolean, required: false, default: true},
     status: {type: String, required: false},
-    dp: {type: String, required: false} // Display picture of user. here we will only store its extension [png,jpg,jpeg]
+    dp: {type: String, required: false},
+    // Display picture of user. here we will only store its extension [png,jpg,jpeg]
 });
 
 /** User Schema for Basic User Information */
@@ -37,7 +38,11 @@ const secondaryUserSchema = new mongoose.Schema({
     booth: {type: String, required: false, trim: true, maxLength: 30}, // Booth
     wpn: {type: String, required: true, trim: true, maxLength: 10}, // Whatsapp Number
     insta: {type: String, required: false, trim: true, maxLength: 70}, // Instagram URL
-    fb: {type: String, required: false, trim: true, maxLength: 70}, // Facebook URL
+    fb: {type: String, required: false, trim: true, maxLength: 70},
+    owner:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"users"
+    } // Facebook URL
 });
 
 const TemporaryUserModel = new mongoose.model("user-temps", temporaryUserSchema);

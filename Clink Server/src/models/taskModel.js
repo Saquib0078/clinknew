@@ -8,6 +8,8 @@ const taskSchema = new mongoose.Schema({
     comments: {type: Number, default: 0},
     date: {type: String, required: true},
     imageID: {type: String},
+    createdBy:{type: mongoose.Schema.Types.ObjectId,
+        ref: 'users'},
     status:{type:String,
         default: 'pending'},
         completedUsers: [

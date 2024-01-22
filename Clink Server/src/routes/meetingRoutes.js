@@ -6,6 +6,7 @@ const {meetingPath} = require("../managers/fileManager");
 const {generateRandomID} = require("../helpers/appHelper");
 const{getMeetImage}=require('../controllers/meeting/meetingController')
 const fs = require('fs');
+const { verifyJwt } = require('../middleware/jwtAuthMiddleware');
 
 
 const storage = multer.diskStorage({
@@ -25,15 +26,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage: storage});
 
-router.post("/meeting",upload.single('imageID'), meeting);
+router.post("/meeting",upload.single('imageID'),verifyJwt, meeting);
 router.get("/liveMeetings",getMeet );
 router.put('/updateMeet/:id',updateMeet)
 router.get("/getMeeting/:broadcastMediaID", getMeetImage);
 
 // router.get("/joinmeeting/", joinmeeting);
-
-
-
 
 
 module.exports = router;
