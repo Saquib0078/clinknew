@@ -30,7 +30,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(compression({
     level: 6, threshold: 0
 }));
-
+//mongodb+srv://saquib007:IUnXazhITeBF13a0@cluster0.eo7jwgy.mongodb.net/clink
 app.use('/app', appRoute);
 app.use('/user', userRoute);
 app.use('/admin', adminRoute);

@@ -5,7 +5,7 @@ const {login, sessionLogin} = require("../auth/user/userLogin");
 const {checkRegister, register} = require("../auth/user/userRegister");
 const {verifyJwt, verifyJwtUnSession} = require("../middleware/jwtAuthMiddleware");
 const {resendOTP} = require("../auth/user/userActions");
-const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers}=require('../controllers/user/userController')
+const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers,UpdateNameonFrame,getBroadcastMedia,SendNotification}=require('../controllers/user/userController')
 
 const{CreateGraphics}=require('../controllers/user/graphicsController')
 const {
@@ -21,14 +21,14 @@ const {
     publishBroadcast, pinBroadcast, unpinBroadcast
 } = require("../controllers/user/broadcastController");
 const {setUserInfo} = require("../controllers/user/userController");
-const {getNetworks} = require("../controllers/user/networkController");
-const {dataPath} = require("../managers/fileManager");
+const {getNetworks,getNetworksNotification} = require("../controllers/user/networkController");
+const {usersPath} = require("../managers/fileManager");
 const {generateRandomID} = require("../helpers/appHelper");
 const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, dataPath + req.params.type + "/");
+        cb(null, usersPath+ "/");
     }, filename: (req, file, cb) => {
         let tempFilename = file.originalname;
         let id = generateRandomID();
@@ -43,6 +43,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage: storage});
 
+router.post('/controllers/send-notification',SendNotification)
+
 /* Authentication Routes */
 router.post("/auth/checkRegister", registerRateLimit, checkRegister);
 router.post("/auth/register", registerRateLimit, register);
@@ -52,16 +54,21 @@ router.post("/auth/actions/resendOTP", otpRateLimit, resendOTP);
 
 router.get('/controllers/getUser/:userId',getUserById)
 router.put('/controllers/user/:id',UpdateUser)
-router.put('/controllers/users/:id',UpdateUserPrimary)
+router.put('/controllers/users/:id',verifyJwt,UpdateUserPrimary)
+router.put('/controllers/frameusers/:id',upload.single('Image'),UpdateNameonFrame)
+
 
 
 
 router.get('/controllers/getUser',queryUsers)
 router.get('/controllers/getUsers',getUSers)
 
+router.get("/user/:broadcastMediaID", getBroadcastMedia);
 
 router.post("/controllers/setUserInfo", verifyJwtUnSession, setUserInfo);
 router.post("/controllers/getNetworks/:skip", verifyJwt, getNetworks);
+router.get("/controllers/getNetworks", verifyJwt, getNetworksNotification);
+
 
 router.post("/controllers/publishBroadcast/:type", verifyJwt, upload.single('media'), publishBroadcast);
 router.post("/controllers/getBroadcasts/:skip", verifyJwt, getBroadcast);

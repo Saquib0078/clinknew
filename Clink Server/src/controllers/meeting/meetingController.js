@@ -3,7 +3,7 @@ const {meetingPath} = require("../../managers/fileManager");
 
 
 const meeting = async (req, res) => {
-    const { meetName, meetDescription, time, date } = req.body;
+    const { meetName, meetDescription, time, date,radioButtonValue} = req.body;
     const imageID=req.file;
     try {
         if (!meetName || !meetDescription || !time || !date||!imageID) {
@@ -15,6 +15,7 @@ const meeting = async (req, res) => {
             meetDescription,
             time,
             date,
+            radioButtonValue,
             imageID:imageID.filename,
             createdBy:req.user._id
 

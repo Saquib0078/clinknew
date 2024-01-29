@@ -5,9 +5,10 @@ const meetSchema = new mongoose.Schema({
     meetName:{type:String},
     meetDescription:{type:String},
     time:{type:String},
-    live: {type: Boolean, default: true},
     date: {type: String},
+    radioButtonValue: { type: String},
     imageID: {type: String},
+    live: {type: Boolean, default: true},
     createdBy:{type: mongoose.Schema.Types.ObjectId,
         ref: 'users'}
 

@@ -17,6 +17,10 @@ const primaryUserSchema = new mongoose.Schema({
     num: {type: String, required: true, trim: true, maxLength: 10, unique: true},
     role: {type: Number, enum: [0, 1, 2, 3, 4], default: 0},
     regTime: {type: String, default: getIndianTime()},
+    FrameName: {type: String, required: false},
+    FrameAdd: {type: String, required: false},
+    Image: {type: String, required: false},
+    fcmToken:{type:String},
     /** When User Complete Filling Up the Basic Info Then it will become true  */
     completed: {type: Boolean, required: false, default: true},
     status: {type: String, required: false},
@@ -26,6 +30,7 @@ const primaryUserSchema = new mongoose.Schema({
 
 /** User Schema for Basic User Information */
 const secondaryUserSchema = new mongoose.Schema({
+    Image: {type: String, required: false},
     num: {type: String, required: true, trim: true, maxLength: 10, unique: true}, // Number
     lang: {type: String, required: true, trim: true, maxLength: 20}, // Language
     edu: {type: String, required: true, trim: true, maxLength: 30}, // Education
@@ -39,6 +44,8 @@ const secondaryUserSchema = new mongoose.Schema({
     wpn: {type: String, required: true, trim: true, maxLength: 10}, // Whatsapp Number
     insta: {type: String, required: false, trim: true, maxLength: 70}, // Instagram URL
     fb: {type: String, required: false, trim: true, maxLength: 70},
+    dob: {type: String, required: false, trim: true},
+
     owner:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"users"

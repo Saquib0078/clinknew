@@ -7,6 +7,10 @@ const {PrimaryUserModel, TemporaryUserModel} = require("../../models/userModels"
 const {initOTP, getJWT, verifyOTP} = require("../../helpers/authHelper");
 const {getGreeting} = require("../../managers/timeManager");
 
+
+
+
+  
 /**
  * 1st return parameter -> user
  * 2nd return parameter -> failed (code)
@@ -71,7 +75,7 @@ const login = async (req, res) => {
                     return respondFailed(res, code);
                 }
 
-                respondSuccessWithData(res, {token: getJWT(num)});
+                respondSuccessWithData(res, {token: getJWT(num),id:user._id});
             })
 
 
