@@ -44,6 +44,7 @@ const secondaryUserSchema = new mongoose.Schema({
     insta: {type: String, required: false, trim: true, maxLength: 70}, // Instagram URL
     fb: {type: String, required: false, trim: true, maxLength: 70},
     dob: {type: String, required: false, trim: true},
+    age: {type: String, required: false, trim: true},
     bio: {type: String, required: false, trim: true},
 
 

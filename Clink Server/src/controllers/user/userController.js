@@ -58,6 +58,8 @@ const setUserInfo = async (req, res) => {
       await SecondaryUserModel.deleteOne({ num });
     }
 
+   const age= calculateAge(dob);
+
     let userDoc = new SecondaryUserModel({
       num,
       lang,
@@ -73,6 +75,7 @@ const setUserInfo = async (req, res) => {
       insta,
       fb,
       dob,
+      age
     });
 
     await userDoc.save();
@@ -544,6 +547,21 @@ const getNetworkUser = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+function calculateAge(dob) {
+  const dobParts = dob.split('/');
+  const userDob = new Date(dobParts[2], dobParts[1] - 1, dobParts[0]); // Months are zero-based
+  const today = new Date();
+  
+  let age = today.getFullYear() - userDob.getFullYear();
+  const monthDiff = today.getMonth() - userDob.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < userDob.getDate())) {
+      age--;
+  }
+  
+  return age;
+}
 
 module.exports = {
   setUserInfo,

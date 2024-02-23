@@ -60,7 +60,7 @@ cron.schedule('0 0 * * *', async () => {
             const message = {
                 notification: {
                     title: "Happy Birthday!",
-                    body: `Happy birthday, ${primaryUser.fName}! Wishing you a fantastic day filled with joy and happiness!`,
+                    body: `Happy birthday, ${primaryUser.fName}! Wishing you a fantastic day filled with joy and happiness! From C-Link Family`,
                     imageUrl: "https://cdn.pixabay.com/photo/2023/08/21/17/44/flower-8204791_1280.jpg",
                 },
                 topic: primaryUser.num, // Use the device token of the user
