@@ -9,6 +9,7 @@ const broadcastSchema = new mongoose.Schema({
     comments: {type: Number, default: 0},
     time: {type: String, required: true},
     type: {type: String, required: true},
+    dp:{type: String},
     pinned: {type: String}
 });
 

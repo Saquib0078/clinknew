@@ -35,16 +35,16 @@ const getNetworksNotification = async (req, res) => {
     try {
         let network = await PrimaryUserModel.find();
 
-        let networks = [];
-        for (let i = 0; i < network.length; i++) {
-            let net = network[i].toObject();
-            networks.push({
-                username: net["fName"] + " " + net["lName"],
-                dp: net["dp"],
-                num:net["num"]
-            });
-        }
-        respondSuccessWithData(res, networks);
+        // let networks = [];
+        // for (let i = 0; i < network.length; i++) {
+        //     let net = network[i].toObject();
+        //     networks.push({
+        //         username: net["fName"] + " " + net["lName"],
+        //         dp: net["dp"],
+        //         num:net["num"]
+        //     });
+        // }
+        respondSuccessWithData(res, network);
 
     } catch (e) {
         throwError(res, e);

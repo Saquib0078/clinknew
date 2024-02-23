@@ -12,8 +12,7 @@ const BROADCAST_COMMENTS_REPLY_LIMIT = 10;
 const admin = require('firebase-admin');
 
 var serviceAccount = require("../../helpers/c-link-46f11-firebase-adminsdk-xzkke-7a6247f4e9.json");
-const { Token } = require("aws-sdk/lib/token");
-const { use } = require("../../routes/userRoutes");
+
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)

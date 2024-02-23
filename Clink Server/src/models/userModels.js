@@ -20,10 +20,9 @@ const primaryUserSchema = new mongoose.Schema({
     FrameName: {type: String, required: false},
     FrameAdd: {type: String, required: false},
     Image: {type: String, required: false},
-    fcmToken:{type:String},
     /** When User Complete Filling Up the Basic Info Then it will become true  */
     completed: {type: Boolean, required: false, default: true},
-    status: {type: String, required: false},
+    status: {type: String, required: false,default:"Pending"},
     dp: {type: String, required: false},
     // Display picture of user. here we will only store its extension [png,jpg,jpeg]
 });
@@ -45,6 +44,8 @@ const secondaryUserSchema = new mongoose.Schema({
     insta: {type: String, required: false, trim: true, maxLength: 70}, // Instagram URL
     fb: {type: String, required: false, trim: true, maxLength: 70},
     dob: {type: String, required: false, trim: true},
+    bio: {type: String, required: false, trim: true},
+
 
     owner:{
         type:mongoose.Schema.Types.ObjectId,

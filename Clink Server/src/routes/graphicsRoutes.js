@@ -1,5 +1,5 @@
 const express = require('express');
-const {CreateGraphics} = require("../controllers/user/graphicsController");
+const {CreateGraphics,getGraphics,GetGraphics,UpdateGraphics} = require("../controllers/user/graphicsController");
 const{graphicsPath}=require('../managers/fileManager')
 const router = express.Router();
 const multer = require("multer");
@@ -23,7 +23,18 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage: storage});
 
-router.post('/controllers/createGraphics',upload.array('graphicModelList',12),CreateGraphics)
+router.post('/controllers/createGraphics', upload.fields([
+    { name: 'graphicModelList', maxCount: 12 },
+    { name: 'slider', maxCount: 12 }
+]), CreateGraphics);
+
+router.get("/getgraphics/:graphicsId", getGraphics);
+router.get("/getGraphicsMedia", GetGraphics);
+
+router.put("/controllers/updateGraphicsMedia/:id",upload.fields([
+    { name: 'graphicModelList', maxCount: 12 },
+    { name: 'slider', maxCount: 12 }
+]), UpdateGraphics);
 
 
 module.exports = router;

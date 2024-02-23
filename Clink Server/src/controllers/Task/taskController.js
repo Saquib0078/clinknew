@@ -10,22 +10,24 @@ const BROADCAST_COMMENTS_REPLY_LIMIT = 10;
 
 
 const CreateTask = async (req, res) => {
-    const {taskName,taskDescription, time, date } = req.body;
+    const {taskName,taskDescription, time, date,radioButtonValue } = req.body;
     const imageID=req.file;
     try {
-        if (!taskName|| !taskDescription || !time || !date||!imageID) {
-            return res.status(400).send("Data should not be empty");
-        }
-
+        // if (!taskName|| !taskDescription || !time || !date||!imageID) {
+        //     return res.status(400).send("Data should not be empty");
+        // }
+      const userid=req.user._id
         const taskDetails = {
            taskName,
            taskDescription,
             time,
             date,
+            radioButtonValue,
             imageID:imageID.filename,
-            createdBy:req.user._id
+            createdBy:userid
+
         };
-          
+
         const createMeet = await TaskModel.create(taskDetails);
         return res.status(200).json({ status: "success", data: createMeet,id:createMeet._id });
     } catch (error) {

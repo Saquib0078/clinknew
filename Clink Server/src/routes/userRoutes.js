@@ -5,10 +5,14 @@ const {login, sessionLogin} = require("../auth/user/userLogin");
 const {checkRegister, register} = require("../auth/user/userRegister");
 const {verifyJwt, verifyJwtUnSession} = require("../middleware/jwtAuthMiddleware");
 const {resendOTP} = require("../auth/user/userActions");
-const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers,UpdateNameonFrame,getBroadcastMedia,SendNotification}=require('../controllers/user/userController')
+const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers,UpdateNameonFrame,
+    SendNotification,getNotification,getUser,getUserAccepted,getUserRejected
+    ,getUserMedia,getUsers,getNetworkUser
+,getUserAll,getMergedUsers,getuserbyid}=require('../controllers/user/userController')
 
 const{CreateGraphics}=require('../controllers/user/graphicsController')
 const {
+    getBroadcastMedia,
     getBroadcast,
     likeBroadcast,
     removeLikeBroadcast,
@@ -21,7 +25,7 @@ const {
     publishBroadcast, pinBroadcast, unpinBroadcast
 } = require("../controllers/user/broadcastController");
 const {setUserInfo} = require("../controllers/user/userController");
-const {getNetworks,getNetworksNotification} = require("../controllers/user/networkController");
+const {getNetworks,getNetworksNotification,} = require("../controllers/user/networkController");
 const {usersPath} = require("../managers/fileManager");
 const {generateRandomID} = require("../helpers/appHelper");
 const router = express.Router();
@@ -41,9 +45,13 @@ const storage = multer.diskStorage({
     },
 });
 
+
 const upload = multer({storage: storage});
 
-router.post('/controllers/send-notification',SendNotification)
+router.post('/controllers/send-notification',upload.single('imageUrl'),verifyJwt,SendNotification)
+router.get('/controllers/getNotification',verifyJwt,getNotification)
+
+
 
 /* Authentication Routes */
 router.post("/auth/checkRegister", registerRateLimit, checkRegister);
@@ -52,23 +60,41 @@ router.post("/auth/login", loginRateLimit, login);
 router.post("/auth/sessionLogin", verifyJwt, sessionLogin);
 router.post("/auth/actions/resendOTP", otpRateLimit, resendOTP);
 
-router.get('/controllers/getUser/:userId',getUserById)
+router.get('/controllers/getUserDetails/:userId',getUserById)
+router.get('/controllers/getPrimaryUser/:userId',getuserbyid)
+
 router.put('/controllers/user/:id',UpdateUser)
-router.put('/controllers/users/:id',verifyJwt,UpdateUserPrimary)
+router.put('/controllers/users/:id',upload.single("Image"),verifyJwt,UpdateUserPrimary)
 router.put('/controllers/frameusers/:id',upload.single('Image'),UpdateNameonFrame)
 
+router.get("/getPrimaryUsersData/:id", getUsers);
 
 
-
+router.get("/getUsermedia/:userId", getUserMedia);
 router.get('/controllers/getUser',queryUsers)
 router.get('/controllers/getUsers',getUSers)
+router.get('/controllers/getallUser',getUser)
+router.get('/controllers/getUserAll',getUserAll)
+router.get('/controllers/getNetworkUser/:id',getNetworkUser)
 
-router.get("/user/:broadcastMediaID", getBroadcastMedia);
+
+router.get('/getUserAll',getMergedUsers)
+
+
+router.get('/controllers/getUserAccepted',getUserAccepted)
+router.get('/controllers/getUserRejected',getUserRejected)
+
+
+
+// router.get("/user/:broadcastMediaID", getBroadcastMedia);
 
 router.post("/controllers/setUserInfo", verifyJwtUnSession, setUserInfo);
 router.post("/controllers/getNetworks/:skip", verifyJwt, getNetworks);
 router.get("/controllers/getNetworks", verifyJwt, getNetworksNotification);
 
+
+
+router.get("/getBroadcastMedia/:broadcastMediaID", getBroadcastMedia);
 
 router.post("/controllers/publishBroadcast/:type", verifyJwt, upload.single('media'), publishBroadcast);
 router.post("/controllers/getBroadcasts/:skip", verifyJwt, getBroadcast);
