@@ -43,6 +43,7 @@ const setUserInfo = async (req, res) => {
     insta,
     fb,
     dob,
+    gender
   } = req.body;
 
   if (!lang || !edu || !intr || !dist || !teh || !vill || !lMark || !wpn) {
@@ -75,7 +76,8 @@ const setUserInfo = async (req, res) => {
       insta,
       fb,
       dob,
-      age
+      age,
+      gender
     });
 
     await userDoc.save();
@@ -376,19 +378,10 @@ const queryUsers = async (req, res) => {
     const filter = {};
 
     // Check each query parameter and add it to the filter if provided
-    if (req.query.num) filter.num = new RegExp(req.query.num, "i");
-    if (req.query.lang) filter.lang = new RegExp(req.query.lang, "i");
-    if (req.query.edu) filter.edu = new RegExp(req.query.edu, "i");
-    if (req.query.intr) filter.intr = new RegExp(req.query.intr, "i");
-    if (req.query.dist) filter.dist = new RegExp(req.query.dist, "i");
-    if (req.query.teh) filter.teh = new RegExp(req.query.teh, "i");
-    if (req.query.vill) filter.vill = new RegExp(req.query.vill, "i");
-    if (req.query.lMark) filter.lMark = new RegExp(req.query.lMark, "i");
-    if (req.query.ward) filter.ward = new RegExp(req.query.ward, "i");
-    if (req.query.booth) filter.booth = new RegExp(req.query.booth, "i");
-    if (req.query.wpn) filter.wpn = new RegExp(req.query.wpn, "i");
+    if (req.query.fName) filter.fName = new RegExp(req.query.fName, "i");
+    if (req.query.lName) filter.lName = new RegExp(req.query.lName, "i");
 
-    const users = await SecondaryUserModel.find(filter);
+    const users = await PrimaryUserModel.find(filter);
     res.json({ queryUser: users });
   } catch (error) {
     console.error(error);
@@ -398,17 +391,29 @@ const queryUsers = async (req, res) => {
 
 const SendNotification = async (req, res) => {
   try {
-    const { phoneNumbers, title, body } = req.body;
+    let { phoneNumbers, title, body } = req.body;
+    
     const owner = req.user._id;
     const image = req.file.filename;
 
+    console.log(req.body)
+    console.log(phoneNumbers.phoneNumbers)
+
+    // phoneNumbers=phoneNumbers["phoneNumbers"]
+    
+
     const imageUrl = `http://192.168.1.9:3000/user/getUsermedia/${image}`;
+    console.log(phoneNumbers)
+
 
     if (!phoneNumbers || !title || !body) {
       return res.status(400).json({ error: "Invalid request parameters" });
     }
      
     // Ensure phoneNumbers is an array of strings
+    if (typeof phoneNumbers === 'string') {
+      phoneNumbers = [phoneNumbers];
+    }
 
     if (!Array.isArray(phoneNumbers)) {
       return res.status(400).json({ error: "Invalid phoneNumbers format" });
@@ -416,12 +421,14 @@ const SendNotification = async (req, res) => {
 
     // Iterate through each phone number and send a notification to the corresponding topic
     for (const phoneNumber of phoneNumbers) {
-      const topic = phoneNumber;
+      const topic = phoneNumber.replaceAll('"','');
+      console.log(topic)
 
       const message = {
         notification: {
           title,
           body,
+
         },
         data: {
           imageUrl,
@@ -472,7 +479,7 @@ const getNotification = async (req, res) => {
 const getMergedUsers = async (req, res) => {
   try {
     // Extract query parameters from request
-    const { dist, teh, vill, booth } = req.query;
+    const { dist, teh, vill, booth,minAge, maxAge,date,gender } = req.query;
 
     // Build the match object based on the provided query parameters
     const match = {};
@@ -480,7 +487,21 @@ const getMergedUsers = async (req, res) => {
     if (teh) match["secondaryData.teh"] = teh;
     if (vill) match["secondaryData.vill"] = vill;
     if (booth) match["secondaryData.booth"] = booth;
+    if (gender) match["secondaryData.gender"] = gender;
 
+    // if (minAge) match["secondaryData.age"] = minAge;
+    // if (maxAge) match["secondaryData.age"] = maxAge;
+    if (date) {
+      match["secondaryData.dob"] = date; // Match directly with the provided date string
+    }
+
+    if (minAge || maxAge) {
+      match["secondaryData.age"] = {};
+      if (minAge) match["secondaryData.age"]["$gte"] = minAge.toString();
+      if (maxAge) match["secondaryData.age"]["$lte"] = maxAge.toString();
+    }
+    console.log("Match Object:", match);
+     
     // Aggregate query with $match stage for filtering
     const mergedResults = await PrimaryUserModel.aggregate([
       {
@@ -503,6 +524,7 @@ const getMergedUsers = async (req, res) => {
         $project: { secondaryData: 0 }, // Remove the secondaryData field
       },
     ]);
+    
 
     res.json({ mergedUsers: mergedResults });
   } catch (error) {

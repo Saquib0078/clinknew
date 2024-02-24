@@ -5,8 +5,8 @@ const { graphicsPath } = require("../../managers/fileManager");
 
 const CreateGraphics = async (req, res) => {
     try {
-      let { title, type, chipButtonList } = req.body;
-      let { graphicModelList, slider } = req.files;
+      let { title, type } = req.body;
+      let { graphicModelList } = req.files;
   
       // Provide default values or handle missing fields gracefully
       title = title || 'Default Title';
@@ -18,13 +18,11 @@ const CreateGraphics = async (req, res) => {
       }
   
       graphicModelList = graphicModelList ? graphicModelList.map((file) => file.filename) : [];
-      slider = slider ? slider.map((file) => file.filename) : [];
+    //   slider = slider ? slider.map((file) => file.filename) : [];
   
       const graphics = {
         title,
         type,
-        slider,
-        chipButtonList,
         graphicModelList,
       };
   
@@ -34,6 +32,36 @@ const CreateGraphics = async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
   };
+
+
+  const CreateSlider= async (req, res) => {
+    try {
+        const { slider } = req.files;
+
+        if (!slider) {
+            return res.status(400).json({ error: 'Slider files are required.' });
+        }
+
+        const createdSlider = slider.map((file) => file.filename);
+        return res.status(200).json({ status: 'success', slider: createdSlider });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
+const CreatechipButtonList=async (req, res) => {
+    try {
+        let { chipButtonList } = req.body;
+
+        // Process chipButtonList data here if needed
+        chipButtonList = chipButtonList || [];
+
+        return res.status(200).json({ status: 'success', chipButtonList });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
 
   const UpdateGraphics = async (req, res) => {
     try {
@@ -109,4 +137,4 @@ return res.status(200).json({status:'success',graphicData:findGraphics})
 }
 
 
-module.exports={CreateGraphics,getGraphics,GetGraphics,UpdateGraphics}
+module.exports={CreateGraphics,getGraphics,GetGraphics,UpdateGraphics,CreateSlider,CreatechipButtonList}
