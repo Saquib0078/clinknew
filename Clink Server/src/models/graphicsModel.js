@@ -13,21 +13,25 @@ const mongoose = require("mongoose");
 
 const sliderSchema = new mongoose.Schema({
  
-  slider:[String],
-
+  slider: { type: String, required: true }
 },{
   timestamps: true
 });
 
 const chipButtonListSchema = new mongoose.Schema({
   
-  chipButtonList: [String],
+  chipButtonList:{ type: String}
 },{
   timestamps: true
 });
   
-const UniversalModel = mongoose.model('UniversalModel', universalModelSchema);
-const Slider = mongoose.model('Slider', sliderSchema);
-const ChipButtonList = mongoose.model('ChipButtonList', chipButtonListSchema);
+const UniversalModel = new mongoose.model("UniversalModel", universalModelSchema);
+const SliderSchema = new mongoose.model("Slider", sliderSchema);
+const ChipButtonListSchema = new mongoose.model("ChipButtonList", chipButtonListSchema);
 
-module.exports = { UniversalModel, Slider, ChipButtonList };  
+
+
+
+
+
+module.exports = { UniversalModel, SliderSchema, ChipButtonListSchema };  

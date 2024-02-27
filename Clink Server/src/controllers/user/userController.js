@@ -10,7 +10,7 @@ const {
 const { usersPath } = require("../../managers/fileManager");
 const admin = require("firebase-admin");
 const notificationModel = require("../../models/notificationModel");
-var serviceAccount = require("../../helpers/c-link-46f11-firebase-adminsdk-xzkke-7a6247f4e9.json");
+var serviceAccount = require("../../helpers/firebase.json");
 
 const getUserMedia = (req, res) => {
   let { userId } = req.params;
@@ -402,7 +402,7 @@ const SendNotification = async (req, res) => {
     // phoneNumbers=phoneNumbers["phoneNumbers"]
     
 
-    const imageUrl = `http://192.168.1.9:3000/user/getUsermedia/${image}`;
+    const imageUrl = `http://192.168.1.5:3000/user/getUsermedia/${image}`;
     console.log(phoneNumbers)
 
 
@@ -411,24 +411,25 @@ const SendNotification = async (req, res) => {
     }
      
     // Ensure phoneNumbers is an array of strings
-    if (typeof phoneNumbers === 'string') {
-      phoneNumbers = [phoneNumbers];
-    }
+  
 
     if (!Array.isArray(phoneNumbers)) {
+      phoneNumbers=[phoneNumbers]
       return res.status(400).json({ error: "Invalid phoneNumbers format" });
     }
 
     // Iterate through each phone number and send a notification to the corresponding topic
     for (const phoneNumber of phoneNumbers) {
       const topic = phoneNumber.replaceAll('"','');
+      if (typeof phoneNumbers === 'string') {
+        phoneNumbers = [phoneNumbers];
+      }
       console.log(topic)
 
       const message = {
         notification: {
           title,
           body,
-
         },
         data: {
           imageUrl,

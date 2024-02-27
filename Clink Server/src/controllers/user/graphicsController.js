@@ -1,4 +1,5 @@
-const GraphicModel=require('../../models/graphicsModel')
+const {UniversalModel, ChipButtonListSchema, SliderSchema}=require('../../models/graphicsModel')
+
 const { graphicsPath } = require("../../managers/fileManager");
 
 
@@ -6,19 +7,18 @@ const { graphicsPath } = require("../../managers/fileManager");
 const CreateGraphics = async (req, res) => {
     try {
       let { title, type } = req.body;
-      let { graphicModelList } = req.files;
-  
+      let  graphicModelList  = req.files;
+    
       // Provide default values or handle missing fields gracefully
       title = title || 'Default Title';
       type = type || 'Default Type';
-      chipButtonList = chipButtonList || [];
+      
   
       if (req.files.length === 0) {
         return res.status(400).json({ error: 'No files were uploaded.' });
       }
   
       graphicModelList = graphicModelList ? graphicModelList.map((file) => file.filename) : [];
-    //   slider = slider ? slider.map((file) => file.filename) : [];
   
       const graphics = {
         title,
@@ -26,23 +26,100 @@ const CreateGraphics = async (req, res) => {
         graphicModelList,
       };
   
-      const createGraphics = await GraphicModel.create(graphics);
+      const createGraphics = await UniversalModel.create(graphics);
       return res.status(200).json({ status: 'success', graphicsdata: createGraphics });
     } catch (error) {
       return res.status(400).json({ error: error.message });
     }
   };
 
+  const UpdateGraphics = async (req, res) => {
+    try {
+        const { graphicsId } = req.params;
+        const { title, type } = req.body;
+        const { graphicModelList } = req.files;
+
+        // Validate if graphicModelList is provided
+        if (!graphicModelList) {
+            return res.status(400).json({ error: 'Graphic files are required.' });
+        }
+
+        // Find the graphics record based on the graphicsId
+        let graphics = await UniversalModel.findById(graphicsId);
+
+        // Handle case where graphics record is not found
+        if (!graphics) {
+            return res.status(404).json({ error: 'Graphics record not found.' });
+        }
+
+        // Update the graphics data
+        graphics.title = title || graphics.title;
+        graphics.type = type || graphics.type;
+        graphics.graphicModelList = graphicModelList.map((file) => file.filename);
+
+        // Save the updated graphics data to the database
+        await graphics.save();
+
+        return res.status(200).json({ status: 'success', message: 'Graphics updated successfully', graphics: graphics });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+const DeleteGraphics = async (req, res) => {
+    try {
+        const { graphicsId } = req.params;
+
+        // Find the graphics record based on the graphicsId
+        const graphics = await UniversalModel.findById(graphicsId);
+
+        // Handle case where graphics record is not found
+        if (!graphics) {
+            return res.status(404).json({ error: 'Graphics record not found.' });
+        }
+
+        // Delete the graphics record from the database
+        await GraphicModel.findByIdAndDelete(graphicsId);
+
+        return res.status(200).json({ status: 'success', message: 'Graphics deleted successfully' });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+const GetChipButtonList = async (req, res) => {
+    try {
+        // Logic to fetch chip button list data from the database
+        const chipButtonList = await ChipButtonListSchema.find();
+
+        return res.status(200).json({ status: 'success', chipBtns: chipButtonList });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
+const GetSlider = async (req, res) => {
+    try {
+        // Logic to fetch slider data from the database
+        const sliders = await SliderSchema.find();
+
+        return res.status(200).json({ status: 'success', sliders: sliders });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
 
   const CreateSlider= async (req, res) => {
     try {
-        const { slider } = req.files;
+        const slider  = req.file;
 
         if (!slider) {
             return res.status(400).json({ error: 'Slider files are required.' });
         }
 
-        const createdSlider = slider.map((file) => file.filename);
+        const createdSlider = await SliderSchema.create({ slider: slider.filename })
         return res.status(200).json({ status: 'success', slider: createdSlider });
     } catch (error) {
         return res.status(400).json({ error: error.message });
@@ -52,58 +129,77 @@ const CreateGraphics = async (req, res) => {
 
 const CreatechipButtonList=async (req, res) => {
     try {
-        let { chipButtonList } = req.body;
+        let chipButtonList  = req.body;
+         console.log(chipButtonList)
 
-        // Process chipButtonList data here if needed
-        chipButtonList = chipButtonList || [];
+        const create =await  ChipButtonListSchema.create(chipButtonList)
 
-        return res.status(200).json({ status: 'success', chipButtonList });
+        return res.status(200).json({ status: 'success', create });
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
 };
 
-  const UpdateGraphics = async (req, res) => {
+const UpdateSlider = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { title, type, chipButtonList } = req.body;
-        let { graphicModelList, slider } = req.files;
+        const { sliderId } = req.params;
+        const { slider } = req.files;
 
-        const existingGraphics = await GraphicModel.findById(id);
-
-        if (!existingGraphics) {
-            return res.status(404).json({ error: 'Graphics not found' });
+        if (!slider) {
+            return res.status(400).json({ error: 'Slider files are required.' });
         }
 
-        if (title) {
-            existingGraphics.title = title;
-        }
+        // Logic to update the slider with ID `sliderId` with the new slider file
+        const updatedSlider = await SliderModel.findByIdAndUpdate(sliderId, { slider: slider });
 
-        if (type) {
-            existingGraphics.type = type;
-        }
-
-        if (chipButtonList) {
-            existingGraphics.chipButtonList = existingGraphics.chipButtonList.concat(chipButtonList);
-        }
-
-        if (graphicModelList && Array.isArray(graphicModelList)) {
-            existingGraphics.graphicModelList = existingGraphics.graphicModelList.concat(graphicModelList.map(file => file.filename));
-        }
-
-        if (slider && Array.isArray(slider)) {
-            existingGraphics.slider = existingGraphics.slider.concat(slider.map(file => file.filename));
-        }
-
-        const updatedGraphics = await existingGraphics.save();
-
-        return res.status(200).json({ status: 'success', graphicsdata: updatedGraphics });
+        return res.status(200).json({ status: 'success', message: 'Slider updated successfully' });
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
 };
 
 
+const DeleteSlider = async (req, res) => {
+    try {
+        const { sliderId } = req.params;
+
+        // Logic to delete the slider with ID `sliderId`
+        await SliderModel.findByIdAndDelete(sliderId);
+
+        return res.status(200).json({ status: 'success', message: 'Slider deleted successfully' });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
+const UpdateChipButtonList = async (req, res) => {
+    try {
+        const { chipButtonListId } = req.params;
+        const { chipButtonList } = req.body;
+
+        // Logic to update the chipButtonList with ID `chipButtonListId` with the new data
+        const updatedChipButtonList = await ChipButtonListSchema.findByIdAndUpdate(chipButtonListId, { chipButtonList });
+
+        return res.status(200).json({ status: 'success', message: 'ChipButtonList updated successfully' });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
+const DeleteChipButtonList = async (req, res) => {
+    try {
+        const { chipButtonListId } = req.params;
+
+        // Logic to delete the chipButtonList with ID `chipButtonListId`
+        await ChipButtonListSchema.findByIdAndDelete(chipButtonListId);
+
+        return res.status(200).json({ status: 'success', message: 'ChipButtonList deleted successfully' });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
   
   
 const getGraphics = (req, res) => {
@@ -124,7 +220,7 @@ const getGraphics = (req, res) => {
 
 const GetGraphics=async(req,res)=>{
 try {
-    const findGraphics=await GraphicModel.find()
+    const findGraphics=await UniversalModel.find()
 if(!findGraphics) return res.status(400).send("No Data Found")
 
 return res.status(200).json({status:'success',graphicData:findGraphics})
@@ -137,4 +233,5 @@ return res.status(200).json({status:'success',graphicData:findGraphics})
 }
 
 
-module.exports={CreateGraphics,getGraphics,GetGraphics,UpdateGraphics,CreateSlider,CreatechipButtonList}
+module.exports={CreateGraphics,getGraphics,GetGraphics,UpdateGraphics,CreateSlider,CreatechipButtonList,
+DeleteChipButtonList,UpdateChipButtonList,DeleteSlider,UpdateSlider,DeleteGraphics,GetSlider,GetChipButtonList}

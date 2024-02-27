@@ -11,7 +11,7 @@ const BROADCAST_COMMENTS_LIMIT = 10;
 const BROADCAST_COMMENTS_REPLY_LIMIT = 10;
 const admin = require('firebase-admin');
 
-var serviceAccount = require("../../helpers/c-link-46f11-firebase-adminsdk-xzkke-7a6247f4e9.json");
+var serviceAccount = require("../../helpers/firebase.json");
 
 
 admin.initializeApp({
