@@ -43,6 +43,9 @@ router.post("/controllers/slider",upload.single("slider"),CreateSlider);
 router.put("/controllers/slider/:sliderId",upload.single("slider"),UpdateSlider);
 router.delete("/controllers/slider/:sliderId",DeleteSlider);
 
+router.put("/controllers/Graphic/:graphicsId",upload.single("graphicModel"),UpdateGraphics);
+router.delete("/controllers/Graphic/:graphicsId",DeleteGraphics);
+
 
 router.put("/controllers/chipButtonList/:chipButtonListId",UpdateChipButtonList)
 router.delete("/controllers/chipButtonList/:chipButtonListId",DeleteChipButtonList)

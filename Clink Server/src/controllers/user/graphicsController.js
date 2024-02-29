@@ -1,48 +1,77 @@
 const {UniversalModel, ChipButtonListSchema, SliderSchema}=require('../../models/graphicsModel')
 
 const { graphicsPath } = require("../../managers/fileManager");
+const mongoose=require("mongoose")
 
+
+
+// const CreateGraphics = async (req, res) => {
+//     try {
+//       let { title, type } = req.body;
+//       let  graphicModelList  = req.files;
+    
+//       // Provide default values or handle missing fields gracefully
+//       title = title || 'Default Title';
+//       type = type || 'Default Type';
+      
+  
+//       if (req.files.length === 0) {
+//         return res.status(400).json({ error: 'No files were uploaded.' });
+//       }
+  
+//       graphicModelList = graphicModelList ? graphicModelList.map((file) => file.filename) : [];
+  
+//       const graphics = {
+//         title,
+//         type,
+//         graphicModelList,
+//       };
+  
+//       const createGraphics = await UniversalModel.create(graphics);
+//       return res.status(200).json({ status: 'success', graphicsdata: createGraphics });
+//     } catch (error) {
+//       return res.status(400).json({ error: error.message });
+//     }
+//   };
 
 
 const CreateGraphics = async (req, res) => {
     try {
-      let { title, type } = req.body;
-      let  graphicModelList  = req.files;
-    
-      // Provide default values or handle missing fields gracefully
-      title = title || 'Default Title';
-      type = type || 'Default Type';
-      
-  
-      if (req.files.length === 0) {
-        return res.status(400).json({ error: 'No files were uploaded.' });
-      }
-  
-      graphicModelList = graphicModelList ? graphicModelList.map((file) => file.filename) : [];
-  
-      const graphics = {
-        title,
-        type,
-        graphicModelList,
-      };
-  
-      const createGraphics = await UniversalModel.create(graphics);
-      return res.status(200).json({ status: 'success', graphicsdata: createGraphics });
-    } catch (error) {
-      return res.status(400).json({ error: error.message });
-    }
-  };
+        const { title, type } = req.body;
+        let graphicModelList = req.files;
 
-  const UpdateGraphics = async (req, res) => {
+        if (!title || !type || !graphicModelList || graphicModelList.length === 0) {
+            return res.status(400).json({ error: 'Invalid request data.' });
+        }
+
+        // Extract the filenames and generate IDs
+        const graphicModelListWithIds = graphicModelList.map(file => ({ id: new mongoose.Types.ObjectId().toString(), filename: file.filename }));
+        
+        // Create the graphics object
+        const graphics = {
+            title,
+            type,
+            graphicModelList: graphicModelListWithIds
+        };
+
+        // Save the graphics object to the database
+        const createGraphics = await UniversalModel.create(graphics);
+
+        return res.status(200).json({ status: 'success', graphicsdata: createGraphics });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
+
+
+
+  
+
+const UpdateGraphics = async (req, res) => {
     try {
         const { graphicsId } = req.params;
         const { title, type } = req.body;
-        const { graphicModelList } = req.files;
-
-        // Validate if graphicModelList is provided
-        if (!graphicModelList) {
-            return res.status(400).json({ error: 'Graphic files are required.' });
-        }
+        const graphicModel = req.file; // Change to accept a single file
 
         // Find the graphics record based on the graphicsId
         let graphics = await UniversalModel.findById(graphicsId);
@@ -55,7 +84,20 @@ const CreateGraphics = async (req, res) => {
         // Update the graphics data
         graphics.title = title || graphics.title;
         graphics.type = type || graphics.type;
-        graphics.graphicModelList = graphicModelList.map((file) => file.filename);
+
+        // If a file was uploaded, add it to the graphicModelList array
+        if (graphicModel) {
+            // If the existing graphicModelList array doesn't exist, initialize it
+            if (!graphics.graphicModelList) {
+                graphics.graphicModelList = [];
+            }
+
+            // Add the new file to the existing files array
+            graphics.graphicModelList.push({
+                id: new mongoose.Types.ObjectId().toString(),
+                filename: graphicModel.filename
+            });
+        }
 
         // Save the updated graphics data to the database
         await graphics.save();
@@ -65,6 +107,9 @@ const CreateGraphics = async (req, res) => {
         return res.status(400).json({ error: error.message });
     }
 };
+
+
+
 
 const DeleteGraphics = async (req, res) => {
     try {
@@ -79,7 +124,7 @@ const DeleteGraphics = async (req, res) => {
         }
 
         // Delete the graphics record from the database
-        await GraphicModel.findByIdAndDelete(graphicsId);
+        await UniversalModel.findByIdAndDelete(graphicsId);
 
         return res.status(200).json({ status: 'success', message: 'Graphics deleted successfully' });
     } catch (error) {
@@ -218,19 +263,31 @@ const getGraphics = (req, res) => {
     });
 }
 
-const GetGraphics=async(req,res)=>{
-try {
-    const findGraphics=await UniversalModel.find()
-if(!findGraphics) return res.status(400).send("No Data Found")
+const GetGraphics = async (req, res) => {
+    try {
+        const { title } = req.query; // Get the title parameter from the query string
+        
+        // Construct the query based on the title parameter
+        const query = title ? { title: title } : {};
 
-return res.status(200).json({status:'success',graphicData:findGraphics})
+        // Aggregation pipeline to sort documents based on whether the title matches the query
+        const aggregationPipeline = [
+            { $match: query }, // Match documents based on the query
+            { $addFields: { match: { $eq: ["$title", title] } } }, // Add a field to indicate whether the title matches the query
+            { $sort: { match: -1 } } // Sort documents based on the match field (matching documents first)
+        ];
 
-} catch (error) {
-    return res.status(400).send(error.message)
+        const findGraphics = await UniversalModel.aggregate(aggregationPipeline);
+
+        if (!findGraphics) return res.status(400).send("No Data Found");
+
+        return res.status(200).json({ status: 'success', graphicData: findGraphics });
+    } catch (error) {
+        return res.status(400).send(error.message);
+    }
 }
 
 
-}
 
 
 module.exports={CreateGraphics,getGraphics,GetGraphics,UpdateGraphics,CreateSlider,CreatechipButtonList,

@@ -402,7 +402,7 @@ const SendNotification = async (req, res) => {
     // phoneNumbers=phoneNumbers["phoneNumbers"]
     
 
-    const imageUrl = `http://192.168.1.5:3000/user/getUsermedia/${image}`;
+    const imageUrl = `https://clink-production.up.railway.app/user/getUsermedia/${image}`;
     console.log(phoneNumbers)
 
 
