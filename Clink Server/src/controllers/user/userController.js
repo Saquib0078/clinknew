@@ -526,7 +526,7 @@ const getMergedUsers = async (req, res) => {
       },
     ]);
     
-
+   
     res.json({ mergedUsers: mergedResults });
   } catch (error) {
     console.error(error);

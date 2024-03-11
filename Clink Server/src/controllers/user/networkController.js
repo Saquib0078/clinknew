@@ -17,7 +17,8 @@ const getNetworks = async (req, res) => {
             networks.push({
                 username: net["fName"] + " " + net["lName"],
                 dp: net["dp"],
-                num:net["num"]
+                num:net["num"],
+                _id:net["_id"]
             });
         }
         respondSuccessWithData(res, networks);

@@ -40,9 +40,9 @@ const CreateGraphics = async (req, res) => {
         const { title, type } = req.body;
         let graphicModelList = req.files;
 
-        if (!title || !type || !graphicModelList || graphicModelList.length === 0) {
-            return res.status(400).json({ error: 'Invalid request data.' });
-        }
+        // if (!title || !type || !graphicModelList || graphicModelList.length === 0) {
+        //     return res.status(400).json({ error: 'Invalid request data.' });
+        // }
 
         // Extract the filenames and generate IDs
         const graphicModelListWithIds = graphicModelList.map(file => ({ id: new mongoose.Types.ObjectId().toString(), filename: file.filename }));
@@ -65,7 +65,33 @@ const CreateGraphics = async (req, res) => {
 
 
 
-  
+const DeleteAnyGraphicsImage=async(req,res)=>{
+    const { id } = req.params;
+
+    try {
+        // Find the document by its ID
+        const graphics = await UniversalModel.findById(id);
+
+        if (!graphics) {
+            return res.status(404).json({ error: 'Graphics record not found.' });
+        }
+
+        // Extract the ID of the object to be deleted from the request body
+        const { objectId } = req.body;
+
+        // Filter out the object with the specified ID from the graphicModelList array
+        graphics.graphicModelList = graphics.graphicModelList.filter(obj => obj._id.toString() !== objectId);
+
+        // Save the updated document
+        await graphics.save();
+
+        return res.status(200).json({ message: 'Object deleted successfully', graphics });
+    } catch (error) {
+        return res.status(500).json({ error: 'Internal server error', message: error.message });
+    }
+
+
+}
 
 const UpdateGraphics = async (req, res) => {
     try {
@@ -109,6 +135,25 @@ const UpdateGraphics = async (req, res) => {
 };
 
 
+const GetGraphicsById = async (req, res) => {
+    try {
+        const id  = req.params.id;
+     
+
+        // Find the graphics record based on the graphicsId
+        let graphics = await UniversalModel.findById(id);
+        // Handle case where graphics record is not found
+        if (!graphics) {
+            return res.status(404).json({ error: 'Graphics record not found.' });
+        }
+
+    
+
+        return res.status(200).json({ status: 'success', message: 'Graphics Found successfully', graphics: graphics });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
 
 
 const DeleteGraphics = async (req, res) => {
@@ -175,7 +220,10 @@ const GetSlider = async (req, res) => {
 const CreatechipButtonList=async (req, res) => {
     try {
         let chipButtonList  = req.body;
-         console.log(chipButtonList)
+        const existingButton = await ChipButtonListSchema.findOne(chipButtonList );
+        if (existingButton) {
+            return res.status(400).json({ error: 'Title Already Exists' });
+        }
 
         const create =await  ChipButtonListSchema.create(chipButtonList)
 
@@ -220,31 +268,41 @@ const DeleteSlider = async (req, res) => {
 
 const UpdateChipButtonList = async (req, res) => {
     try {
-        const { chipButtonListId } = req.params;
-        const { chipButtonList } = req.body;
+        let chipButtonListId = req.params.chipButtonListId;
+        const newChipButtonList = req.body.chipButtonList; // Assuming the new chip button list is sent in the request body under the key 'chipButtonList'
 
         // Logic to update the chipButtonList with ID `chipButtonListId` with the new data
-        const updatedChipButtonList = await ChipButtonListSchema.findByIdAndUpdate(chipButtonListId, { chipButtonList });
+        const updatedChipButtonList = await ChipButtonListSchema.findOneAndUpdate(
+            { chipButtonList: chipButtonListId }, 
+            { chipButtonList: newChipButtonList },
+            { new: true } 
+        );
 
-        return res.status(200).json({ status: 'success', message: 'ChipButtonList updated successfully' });
+        if (!updatedChipButtonList) {
+            return res.status(404).json({ status: 'error', message: 'ChipButtonList not found' });
+        }
+
+        return res.status(200).json({ status: 'success', message: 'ChipButtonList updated successfully', updatedChipButtonList });
     } catch (error) {
-        return res.status(400).json({ error: error.message });
+        return res.status(400).json({ status: 'error', error: error.message });
     }
 };
 
 
+
 const DeleteChipButtonList = async (req, res) => {
     try {
-        const { chipButtonListId } = req.params;
-
-        // Logic to delete the chipButtonList with ID `chipButtonListId`
-        await ChipButtonListSchema.findByIdAndDelete(chipButtonListId);
+        let chipButtonListId = req.params.chipButtonListId; // Assuming chipButtonListId is the parameter name
+        
+        // Logic to delete the chipButtonList with the specified chipButtonList identifier
+        await ChipButtonListSchema.findOneAndDelete({ chipButtonList: chipButtonListId });
 
         return res.status(200).json({ status: 'success', message: 'ChipButtonList deleted successfully' });
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
 };
+
   
   
 const getGraphics = (req, res) => {
@@ -265,23 +323,17 @@ const getGraphics = (req, res) => {
 
 const GetGraphics = async (req, res) => {
     try {
-        const { title } = req.query; // Get the title parameter from the query string
-        
+
+        const filter={}
         // Construct the query based on the title parameter
-        const query = title ? { title: title } : {};
+        if (req.query.title) filter.title = new RegExp(req.query.title, "i");
 
-        // Aggregation pipeline to sort documents based on whether the title matches the query
-        const aggregationPipeline = [
-            { $match: query }, // Match documents based on the query
-            { $addFields: { match: { $eq: ["$title", title] } } }, // Add a field to indicate whether the title matches the query
-            { $sort: { match: -1 } } // Sort documents based on the match field (matching documents first)
-        ];
-
-        const findGraphics = await UniversalModel.aggregate(aggregationPipeline);
+        // Find documents based on the query
+        const findGraphics = await UniversalModel.find(filter);
 
         if (!findGraphics) return res.status(400).send("No Data Found");
 
-        return res.status(200).json({ status: 'success', graphicData: findGraphics });
+        return res.status(200).json({ status: 'success', graphics: findGraphics });
     } catch (error) {
         return res.status(400).send(error.message);
     }
@@ -290,5 +342,7 @@ const GetGraphics = async (req, res) => {
 
 
 
+
 module.exports={CreateGraphics,getGraphics,GetGraphics,UpdateGraphics,CreateSlider,CreatechipButtonList,
-DeleteChipButtonList,UpdateChipButtonList,DeleteSlider,UpdateSlider,DeleteGraphics,GetSlider,GetChipButtonList}
+DeleteChipButtonList,UpdateChipButtonList,DeleteSlider,UpdateSlider,DeleteGraphics,GetSlider,GetChipButtonList,
+DeleteAnyGraphicsImage,GetGraphicsById}

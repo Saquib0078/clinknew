@@ -1,5 +1,5 @@
 const express = require('express');
-const {getTask,CreateTask,updateTask} = require("../controllers/Task/taskController");
+const {getTask,CreateTask,updateTask, deleteTask} = require("../controllers/Task/taskController");
 const router = express.Router();
 const multer = require("multer");
 const {taskPath} = require("../managers/fileManager");
@@ -33,6 +33,7 @@ router.get("/getTask",getTask );
 router.get("/getTask/:broadcastMediaID", getTaskImage);
 router.put('/tasks/:taskId/complete',completedTask)
 router.get('/tasks/:taskId',getCompletedUSers)
+router.delete('/tasks/:id',deleteTask)
 
 // router.get("/joinmeeting/", joinmeeting);
 
