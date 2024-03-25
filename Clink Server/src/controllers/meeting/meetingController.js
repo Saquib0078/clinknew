@@ -98,7 +98,7 @@ const getMeetImage = (req, res) => {
 const getMeet=async(req,res)=>{
 
     try {
-        const meetings = await MeetModel.find();
+        const meetings = await MeetModel.find().sort({ createdAt: -1 });
         return res.json({ status: "success", meeting: meetings });
     } catch (error) {
         return res.status(500).json({ error: error.message });

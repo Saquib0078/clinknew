@@ -157,7 +157,7 @@ const getTaskImage = (req, res) => {
 const getTask=async(req,res)=>{
 
     try {
-        const taskings = await TaskModel.find();
+        const taskings = await TaskModel.find().sort({ createdAt: -1 });
         return res.json({ status: "success",task:taskings });
     } catch (error) {
         return res.status(500).json({ error: error.message });

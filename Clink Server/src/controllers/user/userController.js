@@ -402,7 +402,7 @@ const SendNotification = async (req, res) => {
     // phoneNumbers=phoneNumbers["phoneNumbers"]
     
 
-    const imageUrl = `https://clink-production.up.railway.app/user/getUsermedia/${image}`;
+    const imageUrl = `http://192.168.1.7:3000/user/getUsermedia/${image}`;
     console.log(phoneNumbers)
 
 
@@ -433,6 +433,7 @@ const SendNotification = async (req, res) => {
         },
         data: {
           imageUrl,
+           
         },
         topic,
       };
@@ -468,7 +469,7 @@ const getNotification = async (req, res) => {
     const userPhoneNumber = req.user.num; // Replace this with the actual user's phone number
     const notifications = await notificationModel.find({
       phoneNumbers: userPhoneNumber,
-    });
+    }).sort({ createdAt: -1 });
 
     return res.json({ status: "success", notification: notifications });
   } catch (error) {

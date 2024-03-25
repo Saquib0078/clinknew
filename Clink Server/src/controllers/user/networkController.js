@@ -9,7 +9,7 @@ const getNetworks = async (req, res) => {
     let num = req.user.num;
 
     try {
-        let network = await PrimaryUserModel.find({num: {$ne: num}}).sort({_id: 1}).skip(skip).limit(NETWORK_LIMIT);
+        let network = await PrimaryUserModel.find({num: {$ne: num}, role: { $ne: 5 }}).sort({_id: 1}).skip(skip).limit(NETWORK_LIMIT);
 
         let networks = [];
         for (let i = 0; i < network.length; i++) {

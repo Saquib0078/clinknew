@@ -37,7 +37,7 @@ const mongoose=require("mongoose")
 
 const CreateGraphics = async (req, res) => {
     try {
-        const { title, type } = req.body;
+        const { title, type,date } = req.body;
         let graphicModelList = req.files;
 
         // if (!title || !type || !graphicModelList || graphicModelList.length === 0) {
@@ -51,6 +51,7 @@ const CreateGraphics = async (req, res) => {
         const graphics = {
             title,
             type,
+            date,
             graphicModelList: graphicModelListWithIds
         };
 
@@ -235,7 +236,7 @@ const CreatechipButtonList=async (req, res) => {
 
 const UpdateSlider = async (req, res) => {
     try {
-        const { sliderId } = req.params;
+        const  sliderId = req.params;
         const { slider } = req.files;
 
         if (!slider) {
@@ -243,7 +244,7 @@ const UpdateSlider = async (req, res) => {
         }
 
         // Logic to update the slider with ID `sliderId` with the new slider file
-        const updatedSlider = await SliderModel.findByIdAndUpdate(sliderId, { slider: slider });
+        const updatedSlider = await SliderModel.findOneAndUpdate({slider:sliderId}, { slider: slider });
 
         return res.status(200).json({ status: 'success', message: 'Slider updated successfully' });
     } catch (error) {
@@ -254,10 +255,9 @@ const UpdateSlider = async (req, res) => {
 
 const DeleteSlider = async (req, res) => {
     try {
-        const { sliderId } = req.params;
-
+        const sliderId = req.params.sliderId
         // Logic to delete the slider with ID `sliderId`
-        await SliderModel.findByIdAndDelete(sliderId);
+        await SliderSchema.findOneAndDelete({slider:sliderId});
 
         return res.status(200).json({ status: 'success', message: 'Slider deleted successfully' });
     } catch (error) {
@@ -329,15 +329,44 @@ const GetGraphics = async (req, res) => {
         if (req.query.title) filter.title = new RegExp(req.query.title, "i");
 
         // Find documents based on the query
-        const findGraphics = await UniversalModel.find(filter);
+        let findGraphics = await UniversalModel.find(filter);
 
         if (!findGraphics) return res.status(400).send("No Data Found");
+        findGraphics = sortObjectsByFestival(findGraphics);
 
         return res.status(200).json({ status: 'success', graphics: findGraphics });
     } catch (error) {
         return res.status(400).send(error.message);
     }
 }
+function sortObjectsByFestival(objects) {
+    const today = new Date();
+    const todayDay = today.getDate(); // Get the day of the month for today
+
+    // Sort the objects based on the day of the month
+    objects.sort((a, b) => {
+        const dayA = getDayOfMonth(a.date); // Get the day of the month for object A
+        const dayB = getDayOfMonth(b.date); // Get the day of the month for object B
+
+        // Compare the days of the month
+        if (dayA === todayDay) {
+            return -1; // Object A is for today, so it should come before object B
+        } else if (dayB === todayDay) {
+            return 1; // Object B is for today, so it should come before object A
+        } else {
+            return dayA - dayB; // Sort by day of the month in ascending order
+        }
+    });
+
+    return objects;
+}
+
+// Function to extract the day of the month from a date string in DD/MM/YYYY format
+function getDayOfMonth(dateString) {
+    return Number(dateString.split('/')[0]); // Extract day from DD/MM/YYYY format
+}
+
+
 
 
 

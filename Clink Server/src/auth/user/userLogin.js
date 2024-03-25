@@ -46,7 +46,7 @@ const userLogin = async (num, res, callback, session = false) => {
             }
         }
 
-        if (user.status === "banned") {
+        if (user.role === 5) {
             callback(null);
             return respondFailed(res, "203");
         }

@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
   const universalModelSchema = new mongoose.Schema({
     title: String,
     type: String,
+    date:String,
     graphicModelList: [{ _id: String,filename:String}],
   },{
     timestamps: true
