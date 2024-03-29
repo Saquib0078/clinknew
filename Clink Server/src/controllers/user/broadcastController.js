@@ -18,12 +18,15 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
+
 const getBroadcastMedia = (req, res) => {
+    console.log(req.headers)
     let {broadcastMediaID} = req.params;
 
     if (!broadcastMediaID) {
         return respondFailed(res, "000");
     }
+   
     res.sendFile(broadcastsPath + broadcastMediaID, (err) => {
         if (err) {
             // console.log(err);

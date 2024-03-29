@@ -9,6 +9,9 @@ const server = http.createServer(app);
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
 const moment = require('moment');
+const cluster = require('node:cluster');
+const numCPUs = require('node:os').availableParallelism();
+const process = require('node:process');
 
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
@@ -94,20 +97,39 @@ app.use('/task', TaskRoute);
 app.use('/graphics', GraphicsRouts);
 
 
+app.get('/test-me', function (req, res) {
+    res.json('My First ever api!')
+});
 
 
 app.use(function (req, res) {
     return res.status(404).send({status: false, message: "Path Not Found"})
 });
 
+if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is running`);
+  
+    // Fork workers.
+    for (let i = 0; i < numCPUs; i++) {
+      cluster.fork();
+    }
+  
+    cluster.on('exit', (worker, code, signal) => {
+      console.log(`worker ${worker.process.pid} died`);
+    });
+  } else {
+    
+    const port = process.env.PORT || 3000;
+    app.listen(port, function () {
+        databaseManager.connect();
+        console.log("Server running on Port " + port);
+    });
+    
+    console.log(`Worker ${process.pid} started`);
+  }
 
 
 
 
 
-const port = process.env.PORT || 3000;
-app.listen(port, function () {
-    databaseManager.connect();
-    console.log("Server running on Port " + port);
-});
 
