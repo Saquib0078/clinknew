@@ -450,7 +450,7 @@ const SendNotification = async (req, res) => {
       body,
       phoneNumbers,
       owner,
-      image,
+      imageUrl,
     });
 
     console.log("Notifications sent successfully");
@@ -552,6 +552,51 @@ const getUsers = async (req, res) => {
   }
 };
 
+const TotalUsers=async(req,res)=>{
+  try {
+    const user=await PrimaryUserModel.countDocuments();
+     if(!user){return 'No Users Found'}
+
+     return res.status(200).json({totalusers:user})
+
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+
+  }
+}
+
+const UsersByDist=async(req,res)=>{
+try {
+  
+
+      const counts = await SecondaryUserModel.aggregate([
+        { 
+          $group: { 
+            _id: { 
+              district: '$dist', 
+              tehsil: '$teh', 
+              village: '$vill' 
+            }, 
+            count: { $sum: 1 } 
+          } 
+        }
+      ]);
+  
+      const result = counts.map(item => ({
+        district: item._id.district,
+        tehsil: item._id.tehsil,
+        village: item._id.village,
+        count: item.count
+      }));
+  
+      res.status(200).json({result:result});
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: error.message });
+    }
+  };
+
+
 const getNetworkUser = async (req, res) => {
   try {
     const id = req.params.id;
@@ -606,4 +651,14 @@ module.exports = {
   getuserbyid,
   getUsers,
   getNetworkUser,
+  TotalUsers,
+  UsersByDist
 };
+
+
+
+
+
+
+
+

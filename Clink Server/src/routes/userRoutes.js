@@ -8,7 +8,7 @@ const {resendOTP} = require("../auth/user/userActions");
 const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers,UpdateNameonFrame,
     SendNotification,getNotification,getUser,getUserAccepted,getUserRejected
     ,getUserMedia,getUsers,getNetworkUser
-,getUserAll,getMergedUsers,getuserbyid}=require('../controllers/user/userController')
+,getUserAll,getMergedUsers,getuserbyid,TotalUsers,UsersByDist}=require('../controllers/user/userController')
 
 const{CreateGraphics}=require('../controllers/user/graphicsController')
 const {
@@ -65,6 +65,7 @@ router.post("/auth/actions/resendOTP", otpRateLimit, resendOTP);
 router.get('/controllers/getUserDetails/:userId',getUserById)
 router.get('/controllers/getPrimaryUser/:userId',getuserbyid)
 
+
 router.put('/controllers/user/:id',UpdateUser)
 router.put('/controllers/users/:id',upload.single("Image"),verifyJwt,UpdateUserPrimary)
 router.put('/controllers/frameusers/:id',upload.single('Image'),UpdateNameonFrame)
@@ -78,6 +79,9 @@ router.get('/controllers/getUsers',getUSers)
 router.get('/controllers/getallUser',getUser)
 router.get('/controllers/getUserAll',getUserAll)
 router.get('/controllers/getNetworkUser/:id',getNetworkUser)
+router.get('/controllers/TotalUsers',TotalUsers)
+router.get('/controllers/user-counts',UsersByDist)
+
 
 
 router.get('/getUserAll',getMergedUsers)
