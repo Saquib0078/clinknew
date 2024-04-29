@@ -22,6 +22,8 @@ const mediaRoute = require('./routes/mediaRoutes')
 const meetingRoute=require('./routes/meetingRoutes')
 const TaskRoute=require('./routes/taskRoutes')
 const GraphicsRouts=require('./routes/graphicsRoutes')
+const StickerRoute=require('./routes/stickerRoutes')
+
 const admin = require("firebase-admin");
 
 
@@ -95,6 +97,8 @@ app.use('/media', mediaRoute);
 app.use('/meeting', meetingRoute);
 app.use('/task', TaskRoute);
 app.use('/graphics', GraphicsRouts);
+app.use('/sticker', StickerRoute);
+
 
 
 app.get('/test-me', function (req, res) {
@@ -108,33 +112,27 @@ app.use(function (req, res) {
     return res.status(404).send({status: false, message: "Path Not Found"})
 });
 
-// if (cluster.isPrimary) {
-//     console.log(`Primary ${process.pid} is running`);
+if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is running`);
   
-//     // Fork workers.
-//     for (let i = 0; i < numCPUs; i++) {
-//       cluster.fork();
-//     }
+    // Fork workers.
+    for (let i = 0; i < numCPUs; i++) {
+      cluster.fork();
+    }
   
-//     cluster.on('exit', (worker, code, signal) => {
-//       console.log(`worker ${worker.process.pid} died`);
-//     });
-//   } else {
+    cluster.on('exit', (worker, code, signal) => {
+      console.log(`worker ${worker.process.pid} died`);
+    });
+  } else {
     
-//     const port = process.env.PORT || 3000;
-//     app.listen(port, function () {
-//         databaseManager.connect();
-//         console.log("Server running on Port " + port);
-//     });
+    const port = process.env.PORT || 3000;
+    app.listen(port, function () {
+        databaseManager.connect();
+        console.log("Server running on Port " + port);
+    });
     
-//     console.log(`Worker ${process.pid} started`);
-const port = process.env.PORT || 3000;
-app.listen(port, function () {
-    databaseManager.connect();
-    console.log("Server running on Port " + port);
-});
-
-
+    console.log(`Worker ${process.pid} started`);
+  }
 
 
 

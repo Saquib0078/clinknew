@@ -168,17 +168,14 @@ const UpdateNameonFrame = async (req, res) => {
       return res.status(400).json({ message: "No user Found" });
     }
 
-    // Fetch the existing document from the database
     const existingData = await PrimaryUserModel.findById(userId);
 
     if (!existingData) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Merge the updated field with the existing document
     const mergedData = { ...existingData.toObject(), ...updatedFields, Image };
 
-    // Save the merged document back to the database
     const updateData = await PrimaryUserModel.findByIdAndUpdate(
       userId,
       mergedData,
@@ -402,7 +399,7 @@ const SendNotification = async (req, res) => {
     // phoneNumbers=phoneNumbers["phoneNumbers"]
     
 
-    const imageUrl = `http://192.168.1.7:3000/user/getUsermedia/${image}`;
+    const imageUrl = `http://192.168.1.6:3000/user/getUsermedia/${image}`;
     console.log(phoneNumbers)
 
 
@@ -439,6 +436,7 @@ const SendNotification = async (req, res) => {
       };
 
       await admin.messaging().send(message);
+    
     }
 
     const notificationId = `${title}-${body}-${Date.now()}`;

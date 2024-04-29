@@ -9,6 +9,8 @@ const broadcastsPath = path.join(__dirname, rawDataPath + "/broadcasts/");
 const meetingPath = path.join(__dirname, rawDataPath + "/meeting/");
 const taskPath = path.join(__dirname, rawDataPath + "/task/");
 const graphicsPath = path.join(__dirname, rawDataPath + "/graphics/");
+const stickersPath = path.join(__dirname, rawDataPath + "/stickers/");
+
 
 
 
@@ -22,5 +24,5 @@ const deleteBroadcastImage = (broadcastID, type, callback) => {
 }
 
 module.exports = {
-    dataPath, usersPath, broadcastsPath, deleteBroadcastImage,meetingPath,taskPath,graphicsPath
+    dataPath, usersPath, broadcastsPath, deleteBroadcastImage,meetingPath,taskPath,graphicsPath,stickersPath
 }
