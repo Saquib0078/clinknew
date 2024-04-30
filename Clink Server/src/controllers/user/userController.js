@@ -10,7 +10,7 @@ const {
 const { usersPath } = require("../../managers/fileManager");
 const admin = require("firebase-admin");
 const notificationModel = require("../../models/notificationModel");
-var serviceAccount = require("../../helpers/firebase.json");
+var serviceAccount = require("../../helpers/firebase");
 
 const getUserMedia = (req, res) => {
   let { userId } = req.params;
@@ -43,7 +43,7 @@ const setUserInfo = async (req, res) => {
     insta,
     fb,
     dob,
-    gender
+    gender,
   } = req.body;
 
   if (!lang || !edu || !intr || !dist || !teh || !vill || !lMark || !wpn) {
@@ -59,7 +59,7 @@ const setUserInfo = async (req, res) => {
       await SecondaryUserModel.deleteOne({ num });
     }
 
-   const age= calculateAge(dob);
+    const age = calculateAge(dob);
 
     let userDoc = new SecondaryUserModel({
       num,
@@ -77,7 +77,7 @@ const setUserInfo = async (req, res) => {
       fb,
       dob,
       age,
-      gender
+      gender,
     });
 
     await userDoc.save();
@@ -389,39 +389,36 @@ const queryUsers = async (req, res) => {
 const SendNotification = async (req, res) => {
   try {
     let { phoneNumbers, title, body } = req.body;
-    
+
     const owner = req.user._id;
     const image = req.file.filename;
 
-    console.log(req.body)
-    console.log(phoneNumbers.phoneNumbers)
+    console.log(req.body);
+    console.log(phoneNumbers.phoneNumbers);
 
     // phoneNumbers=phoneNumbers["phoneNumbers"]
-    
 
     const imageUrl = `http://192.168.1.6:3000/user/getUsermedia/${image}`;
-    console.log(phoneNumbers)
-
+    console.log(phoneNumbers);
 
     if (!phoneNumbers || !title || !body) {
       return res.status(400).json({ error: "Invalid request parameters" });
     }
-     
+
     // Ensure phoneNumbers is an array of strings
-  
 
     if (!Array.isArray(phoneNumbers)) {
-      phoneNumbers=[phoneNumbers]
+      phoneNumbers = [phoneNumbers];
       return res.status(400).json({ error: "Invalid phoneNumbers format" });
     }
 
     // Iterate through each phone number and send a notification to the corresponding topic
     for (const phoneNumber of phoneNumbers) {
-      const topic = phoneNumber.replaceAll('"','');
-      if (typeof phoneNumbers === 'string') {
+      const topic = phoneNumber.replaceAll('"', "");
+      if (typeof phoneNumbers === "string") {
         phoneNumbers = [phoneNumbers];
       }
-      console.log(topic)
+      console.log(topic);
 
       const message = {
         notification: {
@@ -430,13 +427,11 @@ const SendNotification = async (req, res) => {
         },
         data: {
           imageUrl,
-           
         },
         topic,
       };
 
       await admin.messaging().send(message);
-    
     }
 
     const notificationId = `${title}-${body}-${Date.now()}`;
@@ -465,9 +460,11 @@ const SendNotification = async (req, res) => {
 const getNotification = async (req, res) => {
   try {
     const userPhoneNumber = req.user.num; // Replace this with the actual user's phone number
-    const notifications = await notificationModel.find({
-      phoneNumbers: userPhoneNumber,
-    }).sort({ createdAt: -1 });
+    const notifications = await notificationModel
+      .find({
+        phoneNumbers: userPhoneNumber,
+      })
+      .sort({ createdAt: -1 });
 
     return res.json({ status: "success", notification: notifications });
   } catch (error) {
@@ -479,7 +476,7 @@ const getNotification = async (req, res) => {
 const getMergedUsers = async (req, res) => {
   try {
     // Extract query parameters from request
-    const { dist, teh, vill, booth,minAge, maxAge,date,gender } = req.query;
+    const { dist, teh, vill, booth, minAge, maxAge, date, gender } = req.query;
 
     // Build the match object based on the provided query parameters
     const match = {};
@@ -501,7 +498,7 @@ const getMergedUsers = async (req, res) => {
       if (maxAge) match["secondaryData.age"]["$lte"] = maxAge.toString();
     }
     console.log("Match Object:", match);
-     
+
     // Aggregate query with $match stage for filtering
     const mergedResults = await PrimaryUserModel.aggregate([
       {
@@ -524,8 +521,7 @@ const getMergedUsers = async (req, res) => {
         $project: { secondaryData: 0 }, // Remove the secondaryData field
       },
     ]);
-    
-   
+
     res.json({ mergedUsers: mergedResults });
   } catch (error) {
     console.error(error);
@@ -550,50 +546,47 @@ const getUsers = async (req, res) => {
   }
 };
 
-const TotalUsers=async(req,res)=>{
+const TotalUsers = async (req, res) => {
   try {
-    const user=await PrimaryUserModel.countDocuments();
-     if(!user){return 'No Users Found'}
+    const user = await PrimaryUserModel.countDocuments();
+    if (!user) {
+      return "No Users Found";
+    }
 
-     return res.status(200).json({totalusers:user})
-
+    return res.status(200).json({ totalusers: user });
   } catch (error) {
     return res.status(500).json({ error: error.message });
-
   }
-}
+};
 
-const UsersByDist=async(req,res)=>{
-try {
-  
+const UsersByDist = async (req, res) => {
+  try {
+    const counts = await SecondaryUserModel.aggregate([
+      {
+        $group: {
+          _id: {
+            district: "$dist",
+            tehsil: "$teh",
+            village: "$vill",
+          },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
 
-      const counts = await SecondaryUserModel.aggregate([
-        { 
-          $group: { 
-            _id: { 
-              district: '$dist', 
-              tehsil: '$teh', 
-              village: '$vill' 
-            }, 
-            count: { $sum: 1 } 
-          } 
-        }
-      ]);
-  
-      const result = counts.map(item => ({
-        district: item._id.district,
-        tehsil: item._id.tehsil,
-        village: item._id.village,
-        count: item.count
-      }));
-  
-      res.status(200).json({result:result});
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: error.message });
-    }
-  };
+    const result = counts.map((item) => ({
+      district: item._id.district,
+      tehsil: item._id.tehsil,
+      village: item._id.village,
+      count: item.count,
+    }));
 
+    res.status(200).json({ result: result });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: error.message });
+  }
+};
 
 const getNetworkUser = async (req, res) => {
   try {
@@ -616,17 +609,20 @@ const getNetworkUser = async (req, res) => {
 };
 
 function calculateAge(dob) {
-  const dobParts = dob.split('/');
+  const dobParts = dob.split("/");
   const userDob = new Date(dobParts[2], dobParts[1] - 1, dobParts[0]); // Months are zero-based
   const today = new Date();
-  
+
   let age = today.getFullYear() - userDob.getFullYear();
   const monthDiff = today.getMonth() - userDob.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < userDob.getDate())) {
-      age--;
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < userDob.getDate())
+  ) {
+    age--;
   }
-  
+
   return age;
 }
 
@@ -650,13 +646,5 @@ module.exports = {
   getUsers,
   getNetworkUser,
   TotalUsers,
-  UsersByDist
+  UsersByDist,
 };
-
-
-
-
-
-
-
-
