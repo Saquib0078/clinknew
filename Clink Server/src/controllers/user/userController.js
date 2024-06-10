@@ -398,7 +398,7 @@ const SendNotification = async (req, res) => {
 
     // phoneNumbers=phoneNumbers["phoneNumbers"]
 
-    const imageUrl = `http://192.168.1.6:3000/user/getUsermedia/${image}`;
+    const imageUrl = `https://clink-server-production-76b0.up.railway.app/user/getUsermedia/${image}`;
     console.log(phoneNumbers);
 
     if (!phoneNumbers || !title || !body) {
@@ -489,8 +489,15 @@ const getMergedUsers = async (req, res) => {
     // if (minAge) match["secondaryData.age"] = minAge;
     // if (maxAge) match["secondaryData.age"] = maxAge;
     if (date) {
-      match["secondaryData.dob"] = date; // Match directly with the provided date string
-    }
+      const [month, day] = date.split('/'); // Assuming the date is in the format "MM/DD"
+      match["$expr"] = {
+          $and: [
+              { $eq: [{ $month: "$secondaryData.dob" }, parseInt(month)] },
+              { $eq: [{ $dayOfMonth: "$secondaryData.dob" }, parseInt(day)] }
+          ]
+      };
+  }
+  
 
     if (minAge || maxAge) {
       match["secondaryData.age"] = {};
