@@ -398,8 +398,9 @@ const SendNotification = async (req, res) => {
 
     // phoneNumbers=phoneNumbers["phoneNumbers"]
 
-    const imageUrl = `https://clink-server-production-76b0.up.railway.app/user/getUsermedia/${image}`;
-    console.log(phoneNumbers);
+    const imageUrl = process.env.IMAGE_URL+image;
+
+    console.log(imageUrl);
 
     if (!phoneNumbers || !title || !body) {
       return res.status(400).json({ error: "Invalid request parameters" });
