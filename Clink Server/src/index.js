@@ -9,9 +9,6 @@ const server = http.createServer(app);
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
 const moment = require('moment');
-const cluster = require('node:cluster');
-const numCPUs = require('node:os').availableParallelism();
-const process = require('node:process');
 
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
