@@ -1,5 +1,5 @@
 const express = require('express');
-const {getMeet,meeting,updateMeet, deleteMeet} = require("../controllers/meeting/meetingController");
+const {getMeet,meeting,updateMeet, deleteMeet,UpdateLiveStatus} = require("../controllers/meeting/meetingController");
 const router = express.Router();
 const multer = require("multer");
 const {meetingPath} = require("../managers/fileManager");
@@ -29,6 +29,8 @@ const upload = multer({storage: storage});
 router.post("/meeting",upload.single('imageID'),verifyJwt, meeting);
 router.get("/liveMeetings",getMeet );
 router.put('/updateMeet/:id',updateMeet)
+router.put('/updateLive/:id',UpdateLiveStatus)
+
 router.get("/getMeeting/:broadcastMediaID", getMeetImage);
 router.delete('/deleteMeet/:id',deleteMeet)
 

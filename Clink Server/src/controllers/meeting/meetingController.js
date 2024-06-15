@@ -62,6 +62,32 @@ const updateMeet = async (req, res) => {
     }
 };
 
+
+const UpdateLiveStatus=async (req, res) => {
+    const  id  = req.params.id;
+    const  {live}  = req.body;
+
+    try {
+        // Validate the request
+    
+
+        // Find the meet by ID and update its live status
+        const meet = await MeetModel.findByIdAndUpdate(
+            id,
+            { live: live },
+            { new: true, runValidators: true }
+        );
+
+        if (!meet) {
+            return res.status(404).json({ message: 'Meet not found' });
+        }
+
+        res.json({ message: 'Live status updated successfully', meet });
+    } catch (error) {
+        res.status(500).json({ message:error.message });
+    }
+};
+
 // POST /api/joinMeeting
 const deleteMeet=async (req, res) => {
     try {
@@ -119,7 +145,7 @@ const getMeetById=async(req,res)=>{
       }
 }
 
-module.exports={meeting,getMeet,getMeetById,updateMeet,deleteMeet,getMeetImage}
+module.exports={meeting,getMeet,getMeetById,updateMeet,deleteMeet,getMeetImage,UpdateLiveStatus}
 
 
 
