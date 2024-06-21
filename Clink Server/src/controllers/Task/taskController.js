@@ -28,8 +28,8 @@ const CreateTask = async (req, res) => {
 
         };
 
-        const createMeet = await TaskModel.create(taskDetails);
-        return res.status(200).json({ status: "success", data: createMeet,id:createMeet._id });
+        const createtask = await TaskModel.create(taskDetails);
+        return res.status(200).json({ status: "success", data: createtask,id:createtask._id });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
@@ -91,45 +91,51 @@ const CreateTask = async (req, res) => {
   }
 
 
-// GET /api/liveMeetings
+// GET /api/livetaskings
 const updateTask = async (req, res) => {
-    try {
-        const id = req.params.id;
-        const { title,taskdescryption,tasktime, image, date } = req.body;
-
-        // Construct the update object dynamically
-        const updateFields = {};
-        if (title) updateFields.title = title;
-        if (taskdescryption) updateFields.meetdescryption =taskdescryption;
-        if (tasktime) updateFields.meettime =tasktime;
-        if (image) updateFields.image = image;
-        if (date) updateFields.date = date;
-
-        const updatedMeet = await TaskModel.findByIdAndUpdate(
-            id,
-            updateFields,
-            { new: true }
-        );
-
-        if (updatedMeet) {
-            return res.json({ status: "success", data: updatedMeet });
-        } else {
-            return res.status(404).json({ error: 'Meeting not found' });
+  
+        try {
+            const id = req.params.id;
+            const { taskName, taskDescription, tasktime, date } = req.body;
+            let image;
+    
+            if (req.file) {
+                image = req.file.filename; // or req.file.path, depending on how you store files
+            }
+    
+            // Fetch the existing tasking
+            const existingtask = await taskModel.findById(id);
+            if (!existingtask) {
+                return res.status(404).json({ error: 'tasking not found' });
+            }
+    
+            // Update fields with new values or retain existing ones
+            const updateFields = {
+                taskName: taskName || existingtask.taskName,
+                taskDescription: taskDescription || existingtask.taskDescription,
+                tasktime: tasktime || existingtask.tasktime,
+                date: date || existingtask.date,
+                imageID: image || existingtask.imageID
+            };
+    
+            const updatedtask = await TaskModel.findByIdAndUpdate(id, updateFields, { new: true });
+    
+            return res.json({ status: "success", data: updatedtask });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
         }
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
-    }
+    
 };
 
-// POST /api/joinMeeting
+// POST /api/jointasking
 const deleteTask=async (req, res) => {
     try {
-        const deletedMeet = await TaskModel.findByIdAndRemove(req.params.id);
+        const deletedtask = await TaskModel.findByIdAndRemove(req.params.id);
     
-        if (deletedMeet) {
-          return res.json({ status: "success", data: deletedMeet });
+        if (deletedtask) {
+          return res.json({ status: "success", data: deletedtask });
         } else {
-          return res.status(404).json({ error: 'Meeting not found' });
+          return res.status(404).json({ error: 'tasking not found' });
         }
       } catch (error) {
         return res.status(500).json({ error: error.message });

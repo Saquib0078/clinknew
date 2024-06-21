@@ -36,7 +36,7 @@ const meeting = async (req, res) => {
 const updateMeet = async (req, res) => {
     try {
         const id = req.params.id;
-        const { title, meetdescryption, meettime, date } = req.body;
+        const { meetName, meetDescription, meettime, date } = req.body;
         let image;
 
         if (req.file) {
@@ -51,11 +51,11 @@ const updateMeet = async (req, res) => {
 
         // Update fields with new values or retain existing ones
         const updateFields = {
-            title: title || existingMeet.title,
-            meetdescryption: meetdescryption || existingMeet.meetdescryption,
+            meetName: meetName || existingMeet.meetName,
+            meetDescription: meetDescription || existingMeet.meetDescription,
             meettime: meettime || existingMeet.meettime,
             date: date || existingMeet.date,
-            image: image || existingMeet.image
+            imageID: image || existingMeet.imageID
         };
 
         const updatedMeet = await MeetModel.findByIdAndUpdate(id, updateFields, { new: true });

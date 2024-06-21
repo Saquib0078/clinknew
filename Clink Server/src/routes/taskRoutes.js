@@ -28,6 +28,9 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 
 router.post("/task",upload.single('imageID'),verifyJwt, CreateTask);
+router.put("/task/:id",upload.single('imageID'), updateTask);
+
+
 router.get("/getTask",getTask );
 // router.put('/updateMeet/:id',updateMeet)
 router.get("/getTask/:broadcastMediaID", getTaskImage);
