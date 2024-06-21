@@ -388,7 +388,7 @@ const queryUsers = async (req, res) => {
 
 const SendNotification = async (req, res) => {
   try {
-    let { phoneNumbers, title, body } = req.body;
+    let { phoneNumbers, title, body,meetingType } = req.body;
 
     const owner = req.user._id;
     const image = req.file.filename;
@@ -398,11 +398,10 @@ const SendNotification = async (req, res) => {
 
     // phoneNumbers=phoneNumbers["phoneNumbers"]
 
-    const imageUrl = process.env.IMAGE_URL+image;
+    const imageUrl = `http://192.168.1.10:3000/user/getUsermedia/${image}`;
 
     console.log(imageUrl);
-
-    if (!phoneNumbers || !title || !body) {
+    if (!phoneNumbers || !title || !body || !meetingType) {
       return res.status(400).json({ error: "Invalid request parameters" });
     }
 
@@ -412,6 +411,10 @@ const SendNotification = async (req, res) => {
       phoneNumbers = [phoneNumbers];
       return res.status(400).json({ error: "Invalid phoneNumbers format" });
     }
+    const allowedMeetingTypes = ['meeting', 'task'];
+if (!allowedMeetingTypes.includes(meetingType)) {
+  return res.status(400).json({ error: "Invalid meetingType value" });
+}
 
     // Iterate through each phone number and send a notification to the corresponding topic
     for (const phoneNumber of phoneNumbers) {
@@ -428,6 +431,7 @@ const SendNotification = async (req, res) => {
         },
         data: {
           imageUrl,
+          meetingType,
         },
         topic,
       };
@@ -445,6 +449,7 @@ const SendNotification = async (req, res) => {
       phoneNumbers,
       owner,
       imageUrl,
+      meetingType
     });
 
     console.log("Notifications sent successfully");

@@ -134,7 +134,7 @@ const getMeet=async(req,res)=>{
 const getMeetById=async(req,res)=>{
     try {
         const meeting = await MeetModel.findById(req.params.id);
-    
+             
         if (meeting) {
           return res.json(meeting);
         } else {

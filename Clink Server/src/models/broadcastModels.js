@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const broadcastSchema = new mongoose.Schema({
     broadcastID: {type: String, required: true, unique: true},
     num: {type: String, required: true, maxLength: 10},
-    description: {type: String, required: false, maxLength: 200},
+    description: {type: String, required: false, maxLength: 2000},
     likes: {type: Number, default: 0},
     comments: {type: Number, default: 0},
     time: {type: String, required: true},
