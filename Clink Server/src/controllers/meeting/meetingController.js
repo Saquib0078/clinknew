@@ -37,31 +37,30 @@ const updateMeet = async (req, res) => {
     try {
         const id = req.params.id;
         const { title, meetdescryption, meettime, date } = req.body;
-
         let image;
 
         if (req.file) {
             image = req.file.filename; // or req.file.path, depending on how you store files
         }
-        // Construct the update object dynamically
-        const updateFields = {};
-        if (title) updateFields.title = title;
-        if (meetdescryption) updateFields.meetdescryption = meetdescryption;
-        if (meettime) updateFields.meettime = meettime;
-        if (image) updateFields.image = image;
-        if (date) updateFields.date = date;
 
-        const updatedMeet = await MeetModel.findByIdAndUpdate(
-            id,
-            updateFields,
-            { new: true }
-        );
-
-        if (updatedMeet) {
-            return res.json({ status: "success", data: updatedMeet });
-        } else {
+        // Fetch the existing meeting
+        const existingMeet = await MeetModel.findById(id);
+        if (!existingMeet) {
             return res.status(404).json({ error: 'Meeting not found' });
         }
+
+        // Update fields with new values or retain existing ones
+        const updateFields = {
+            title: title || existingMeet.title,
+            meetdescryption: meetdescryption || existingMeet.meetdescryption,
+            meettime: meettime || existingMeet.meettime,
+            date: date || existingMeet.date,
+            image: image || existingMeet.image
+        };
+
+        const updatedMeet = await MeetModel.findByIdAndUpdate(id, updateFields, { new: true });
+
+        return res.json({ status: "success", data: updatedMeet });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
