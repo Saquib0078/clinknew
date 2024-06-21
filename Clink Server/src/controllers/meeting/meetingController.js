@@ -36,8 +36,13 @@ const meeting = async (req, res) => {
 const updateMeet = async (req, res) => {
     try {
         const id = req.params.id;
-        const { title, meetdescryption, meettime, image, date } = req.body;
+        const { title, meetdescryption, meettime, date } = req.body;
 
+        let image;
+
+        if (req.file) {
+            image = req.file.filename; // or req.file.path, depending on how you store files
+        }
         // Construct the update object dynamically
         const updateFields = {};
         if (title) updateFields.title = title;

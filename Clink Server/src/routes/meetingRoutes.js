@@ -30,7 +30,7 @@ router.post("/meeting",upload.single('imageID'),verifyJwt, meeting);
 router.get("/liveMeetings",getMeet );
 router.get("/liveMeetings/:id",getMeetById );
 
-router.put('/updateMeet/:id',updateMeet)
+router.put('/updateMeet/:id',upload.single('imageID'),updateMeet)
 router.put('/updateLive/:id',UpdateLiveStatus)
 
 router.get("/getMeeting/:broadcastMediaID", getMeetImage);
