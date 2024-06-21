@@ -104,7 +104,7 @@ const updateTask = async (req, res) => {
             }
     
             // Fetch the existing tasking
-            const existingtask = await taskModel.findById(id);
+            const existingtask = await TaskModel.findById(id);
             if (!existingtask) {
                 return res.status(404).json({ error: 'tasking not found' });
             }

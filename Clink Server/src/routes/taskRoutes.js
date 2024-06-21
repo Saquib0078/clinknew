@@ -1,5 +1,5 @@
 const express = require('express');
-const {getTask,CreateTask,updateTask, deleteTask} = require("../controllers/Task/taskController");
+const {getTask,CreateTask,updateTask, deleteTask,getTaskById} = require("../controllers/Task/taskController");
 const router = express.Router();
 const multer = require("multer");
 const {taskPath} = require("../managers/fileManager");
@@ -29,6 +29,7 @@ const upload = multer({storage: storage});
 
 router.post("/task",upload.single('imageID'),verifyJwt, CreateTask);
 router.put("/task/:id",upload.single('imageID'), updateTask);
+router.get("/task/:id", getTaskById);
 
 
 router.get("/getTask",getTask );
