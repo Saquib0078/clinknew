@@ -62,6 +62,40 @@ const publishBroadcast = (req, res) => {
   respondSuccess(res);
 };
 
+
+const updateBroadcast = async (req, res) => {
+  try {
+      const id = req.params.id;
+      const { broadcastName, broadcastDescription, broadcastTime, broadcastDate } = req.body;
+      let image;
+
+      if (req.file) {
+          image = req.file.filename; 
+      }
+
+      // Fetch the existing broadcast
+      const existingBroadcast = await BroadcastModel.findById(id);
+      if (!existingBroadcast) {
+          return res.status(404).json({ error: 'Broadcast not found' });
+      }
+
+      // Update fields with new values or retain existing ones
+      const updateFields = {
+          broadcastName: broadcastName || existingBroadcast.broadcastName,
+          broadcastDescription: broadcastDescription || existingBroadcast.broadcastDescription,
+          broadcastTime: broadcastTime || existingBroadcast.broadcastTime,
+          broadcastDate: broadcastDate || existingBroadcast.broadcastDate,
+          broadcastID: image || existingBroadcast.broadcastID
+      };
+
+      const updatedBroadcast = await BroadcastModel.findByIdAndUpdate(id, updateFields, { new: true });
+
+      return res.json({ status: "success", data: updatedBroadcast });
+  } catch (error) {
+      return res.status(500).json({ error: error.message });
+  }
+};
+
 const getBroadcast = async (req, res) => {
   let { skip } = req.params;
   let num = req.user.num;
@@ -367,4 +401,5 @@ module.exports = {
   commentBroadcast,
   replyCommentBroadcast,
   deleteCommentBroadcast,
+  updateBroadcast
 };

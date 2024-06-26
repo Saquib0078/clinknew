@@ -411,7 +411,7 @@ const SendNotification = async (req, res) => {
       phoneNumbers = [phoneNumbers];
       return res.status(400).json({ error: "Invalid phoneNumbers format" });
     }
-    const allowedMeetingTypes = ['meeting', 'task'];
+    const allowedMeetingTypes = ['meeting', 'task',"normal"];
 if (!allowedMeetingTypes.includes(meetingType)) {
   return res.status(400).json({ error: "Invalid meetingType value" });
 }

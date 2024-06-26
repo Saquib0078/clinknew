@@ -108,7 +108,7 @@ const updateTask = async (req, res) => {
             if (!existingtask) {
                 return res.status(404).json({ error: 'tasking not found' });
             }
-    
+             console.log(existingtask)
             // Update fields with new values or retain existing ones
             const updateFields = {
                 taskName: taskName || existingtask.taskName,
@@ -117,6 +117,7 @@ const updateTask = async (req, res) => {
                 date: date || existingtask.date,
                 imageID: image || existingtask.imageID
             };
+
     
             const updatedtask = await TaskModel.findByIdAndUpdate(id, updateFields, { new: true });
     
