@@ -12,7 +12,8 @@ const { getBroadcastMedia,
     commentBroadcast,
     replyCommentBroadcast,
     updateBroadcast,
-    deleteCommentBroadcast} = require("../controllers/user/broadcastController");
+    deleteCommentBroadcast,
+    getBroadcastById} = require("../controllers/user/broadcastController");
 const { broadcastsPath } = require('../managers/fileManager');
 const multer = require('multer');
 const { verifyJwt } = require('../middleware/jwtAuthMiddleware');
@@ -36,10 +37,11 @@ const upload = multer({storage: storage});
 
 router.get("/getBroadcastMedia/:broadcastMediaID", getBroadcastMedia);
 
+
 router.post("/controllers/publishBroadcast/:type", verifyJwt, upload.single('media'), publishBroadcast);
 
 
-router.put("/controllers/publishBroadcast/:type", verifyJwt, upload.single('media'), publishBroadcast);
+router.put("/controllers/publishBroadcast/:type", verifyJwt, upload.single('media'), updateBroadcast);
 
 // router.get("/getBroadcastMedia/:broadcastMediaID", getBroadcastMedia);
 

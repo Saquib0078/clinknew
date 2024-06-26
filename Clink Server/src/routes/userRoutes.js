@@ -19,6 +19,8 @@ const {
     deleteBroadcast,
     commentBroadcast,
     getBroadcastComments,
+    updateBroadcast,
+    getBroadcastById,
     getBroadcastCommentReplies,
     replyCommentBroadcast,
     deleteCommentBroadcast,
@@ -53,6 +55,7 @@ const upload = multer({storage: storage});
 router.post('/controllers/send-notification',upload.single('imageUrl'),verifyJwt,SendNotification)
 router.get('/controllers/getNotification',verifyJwt,getNotification)
 
+router.get("/getBroadcast/:broadcastID", getBroadcastById);
 
 
 /* Authentication Routes */
@@ -103,6 +106,9 @@ router.get("/controllers/getNetworks", verifyJwt, getNetworksNotification);
 router.get("/getBroadcastMedia/:broadcastMediaID", getBroadcastMedia);
 
 router.post("/controllers/publishBroadcast/:type", verifyJwt, upload.single('media'), publishBroadcast);
+router.put("/controllers/publishBroadcast/:broadcastID", upload.single('media'), updateBroadcast);
+
+
 router.post("/controllers/getBroadcasts/:skip", verifyJwt, getBroadcast);
 router.post("/controllers/pinBroadcast/:broadcastID", verifyJwt, pinBroadcast);
 router.post("/controllers/unpinBroadcast/:broadcastID", verifyJwt, unpinBroadcast);

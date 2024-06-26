@@ -65,8 +65,9 @@ const publishBroadcast = (req, res) => {
 
 const updateBroadcast = async (req, res) => {
   try {
-      const id = req.params.id;
-      const { broadcastName, broadcastDescription, broadcastTime, broadcastDate } = req.body;
+      const id = req.params.broadcastID;
+      console.log(id)
+      const { broadcastName, description, broadcastTime, broadcastDate } = req.body;
       let image;
 
       if (req.file) {
@@ -74,7 +75,7 @@ const updateBroadcast = async (req, res) => {
       }
 
       // Fetch the existing broadcast
-      const existingBroadcast = await BroadcastModel.findById(id);
+      const existingBroadcast = await BroadcastModel.findOne({broadcastID:id});
       if (!existingBroadcast) {
           return res.status(404).json({ error: 'Broadcast not found' });
       }
@@ -82,19 +83,38 @@ const updateBroadcast = async (req, res) => {
       // Update fields with new values or retain existing ones
       const updateFields = {
           broadcastName: broadcastName || existingBroadcast.broadcastName,
-          broadcastDescription: broadcastDescription || existingBroadcast.broadcastDescription,
+          description: description || existingBroadcast.description,
           broadcastTime: broadcastTime || existingBroadcast.broadcastTime,
           broadcastDate: broadcastDate || existingBroadcast.broadcastDate,
           broadcastID: image || existingBroadcast.broadcastID
       };
 
-      const updatedBroadcast = await BroadcastModel.findByIdAndUpdate(id, updateFields, { new: true });
+      const updatedBroadcast = await BroadcastModel.findOneAndUpdate({broadcastID:id}, updateFields, { new: true });
 
       return res.json({ status: "success", data: updatedBroadcast });
   } catch (error) {
       return res.status(500).json({ error: error.message });
   }
 };
+
+
+const getBroadcastById = async (req, res) => {
+  try {
+    const broadcastId = req.params.broadcastId;
+    console.log(broadcastId)
+    const broadcast = await BroadcastModel.findOne(broadcastId);
+
+    if (!broadcast) {
+      return res.status(404).json({ message: 'Broadcast not found' });
+    }
+
+    res.status(200).json(broadcast);
+  } catch (error) {
+    console.error('Error fetching broadcast:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 const getBroadcast = async (req, res) => {
   let { skip } = req.params;
@@ -131,7 +151,7 @@ const getBroadcast = async (req, res) => {
       broadcast.isLiked = !!isLiked;
       broadcast.username = userProfile["fName"] + " " + userProfile["lName"];
       broadcast.profileDP = userProfile["dp"];
-
+        
       if (broadcast.hasOwnProperty("pinned")) {
         pinnedBroadcasts.push(broadcast);
         continue;
@@ -401,5 +421,6 @@ module.exports = {
   commentBroadcast,
   replyCommentBroadcast,
   deleteCommentBroadcast,
-  updateBroadcast
+  updateBroadcast,
+  getBroadcastById
 };
