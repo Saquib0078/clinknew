@@ -66,7 +66,6 @@ const publishBroadcast = (req, res) => {
 const updateBroadcast = async (req, res) => {
   try {
       const id = req.params.broadcastID;
-      console.log(id)
       const { broadcastName, description, broadcastTime, broadcastDate } = req.body;
       let image;
 
@@ -100,14 +99,17 @@ const updateBroadcast = async (req, res) => {
 
 const getBroadcastById = async (req, res) => {
   try {
-    const broadcastId = req.params.broadcastId;
-    console.log(broadcastId)
-    const broadcast = await BroadcastModel.findOne(broadcastId);
-
+    const broadcastId = req.params.broadcastID;
+    
+    let broadcast = await BroadcastModel.findOne({ broadcastID: broadcastId });
+if (!broadcast) {
+  broadcast = await BroadcastModel.findById(broadcastId);
+}
+    
     if (!broadcast) {
       return res.status(404).json({ message: 'Broadcast not found' });
     }
-
+    
     res.status(200).json(broadcast);
   } catch (error) {
     console.error('Error fetching broadcast:', error);
