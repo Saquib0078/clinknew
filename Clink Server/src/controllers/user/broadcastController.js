@@ -14,6 +14,7 @@ const { PrimaryUserModel } = require("../../models/userModels");
 const {
   deleteBroadcastImage,
   broadcastsPath,
+  usersPath,
 } = require("../../managers/fileManager");
 const { generateRandomID } = require("../../helpers/appHelper");
 const { getIndianTime } = require("../../managers/timeManager");
@@ -29,14 +30,13 @@ admin.initializeApp({
 });
 
 const getBroadcastMedia = (req, res) => {
-  console.log(req.headers);
   let { broadcastMediaID } = req.params;
 
   if (!broadcastMediaID) {
     return respondFailed(res, "000");
   }
 
-  res.sendFile(broadcastsPath + broadcastMediaID, (err) => {
+  res.sendFile(usersPath + broadcastMediaID, (err) => {
     if (err) {
       // console.log(err);
       // throwError(res, {

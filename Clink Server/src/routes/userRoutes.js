@@ -48,9 +48,12 @@ const storage = multer.diskStorage({
 });
 
 
-const upload = multer({storage: storage});
-
-
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        cb(null, true); // Allow all file types
+    }
+});
 
 router.post('/controllers/send-notification',upload.single('imageUrl'),verifyJwt,SendNotification)
 router.get('/controllers/getNotification',verifyJwt,getNotification)
