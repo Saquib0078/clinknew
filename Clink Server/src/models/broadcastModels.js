@@ -22,7 +22,7 @@ const broadcastCommentSchema = new mongoose.Schema({
     broadcastID: {type: String, required: true},
     commentID: {type: String, required: true},
     num: {type: String, required: true, maxLength: 10},
-    comment: {type: String, required: true, maxLength: 300},
+    comment: {type: String, required: true, maxLength: 2000},
     replies: {type: Number},
     time: {type: String, required: true}
 });
@@ -31,7 +31,7 @@ const broadcastCommentReplySchema = new mongoose.Schema({
     broadcastID: {type: String, required: true},
     commentID: {type: String, required: true},
     num: {type: String, required: true, maxLength: 10},
-    reply: {type: String, required: true, maxLength: 300},
+    reply: {type: String, required: true, maxLength: 2000},
     time: {type: String, required: true}
 });
 
