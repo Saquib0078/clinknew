@@ -47,7 +47,7 @@ const getBroadcastMedia = (req, res) => {
 };
 
 const publishBroadcast = (req, res) => {
-  let { id, type, description } = req.body;
+  let { id, type, description,broadcastUrl } = req.body;
   let num = req.user.num;
 
   let broadcast = new BroadcastModel({
@@ -55,6 +55,7 @@ const publishBroadcast = (req, res) => {
     num,
     description,
     type,
+    broadcastUrl,
     time: getIndianTime(),
   });
   broadcast.save();
@@ -66,7 +67,7 @@ const publishBroadcast = (req, res) => {
 const updateBroadcast = async (req, res) => {
   try {
       const id = req.params.broadcastID;
-      const { broadcastName, description, broadcastTime, broadcastDate } = req.body;
+      const { broadcastName, description, broadcastTime, broadcastDate,broadcastUrl } = req.body;
       let image;
 
       if (req.file) {
@@ -85,7 +86,8 @@ const updateBroadcast = async (req, res) => {
           description: description || existingBroadcast.description,
           broadcastTime: broadcastTime || existingBroadcast.broadcastTime,
           broadcastDate: broadcastDate || existingBroadcast.broadcastDate,
-          broadcastID: image || existingBroadcast.broadcastID
+          broadcastID: image || existingBroadcast.broadcastID,
+          broadcastUrl:broadcastUrl||existingBroadcast.broadcastUrl
       };
 
       const updatedBroadcast = await BroadcastModel.findOneAndUpdate({broadcastID:id}, updateFields, { new: true });

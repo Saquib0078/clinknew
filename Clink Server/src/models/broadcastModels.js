@@ -10,7 +10,9 @@ const broadcastSchema = new mongoose.Schema({
     time: {type: String, required: true},
     type: {type: String, required: true},
     dp:{type: String},
-    pinned: {type: String}
+    pinned: {type: String},
+    broadcastUrl: {type: String,default:""},
+
 });
 
 const broadcastLikeSchema = new mongoose.Schema({
