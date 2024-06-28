@@ -20,7 +20,7 @@ const CreateTask = async (req, res) => {
         const taskDetails = {
            taskName,
            taskDescription,
-           date,
+            date,
             time,
             taskUrl,
             radioButtonValue,
@@ -97,7 +97,7 @@ const updateTask = async (req, res) => {
   
         try {
             const id = req.params.id;
-            const { taskName, taskDescription, tasktime, date,taskUrl } = req.body;
+            const { taskName, taskDescription, time, date,taskUrl } = req.body;
             let image;
     
             if (req.file) {
@@ -113,7 +113,7 @@ const updateTask = async (req, res) => {
             const updateFields = {
                 taskName: taskName || existingtask.taskName,
                 taskDescription: taskDescription || existingtask.taskDescription,
-                tasktime: tasktime || existingtask.tasktime,
+                time: time || existingtask.time,
                 date: date || existingtask.date,
                 taskUrl: taskUrl || existingtask.taskUrl,
                 imageID: image || existingtask.imageID
