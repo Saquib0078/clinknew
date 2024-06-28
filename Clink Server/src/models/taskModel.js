@@ -8,6 +8,7 @@ const taskSchema = new mongoose.Schema({
     comments: {type: Number, default: 0},
     date: {type: String, required: true},
     imageID: {type: String},
+    taskUrl: {type: String},
     radioButtonValue: { type: String},
     createdBy:{type: mongoose.Schema.Types.ObjectId,
         ref: 'users'},

@@ -10,7 +10,7 @@ const BROADCAST_COMMENTS_REPLY_LIMIT = 10;
 
 
 const CreateTask = async (req, res) => {
-    const {taskName,taskDescription, time, date,radioButtonValue } = req.body;
+    const {taskName,taskDescription, time, date,radioButtonValue,taskUrl } = req.body;
     const imageID=req.file;
     try {
         // if (!taskName|| !taskDescription || !time || !date||!imageID) {
@@ -20,8 +20,9 @@ const CreateTask = async (req, res) => {
         const taskDetails = {
            taskName,
            taskDescription,
+           date,
             time,
-            date,
+            taskUrl,
             radioButtonValue,
             imageID:imageID.filename,
             createdBy:userid
@@ -96,7 +97,7 @@ const updateTask = async (req, res) => {
   
         try {
             const id = req.params.id;
-            const { taskName, taskDescription, tasktime, date } = req.body;
+            const { taskName, taskDescription, tasktime, date,taskUrl } = req.body;
             let image;
     
             if (req.file) {
@@ -108,13 +109,13 @@ const updateTask = async (req, res) => {
             if (!existingtask) {
                 return res.status(404).json({ error: 'tasking not found' });
             }
-             console.log(existingtask)
             // Update fields with new values or retain existing ones
             const updateFields = {
                 taskName: taskName || existingtask.taskName,
                 taskDescription: taskDescription || existingtask.taskDescription,
                 tasktime: tasktime || existingtask.tasktime,
                 date: date || existingtask.date,
+                taskUrl: taskUrl || existingtask.taskUrl,
                 imageID: image || existingtask.imageID
             };
 
