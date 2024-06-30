@@ -398,7 +398,8 @@ const SendNotification = async (req, res) => {
 
     // phoneNumbers=phoneNumbers["phoneNumbers"]
 
-    const imageUrl = `http://192.168.173.253:3000/user/getUsermedia/${image}`;
+    const imageUrl = `http://118.139.167.71:3000/user/getUsermedia/${image}`;
+
 
     console.log(imageUrl);
     if (!phoneNumbers || !title || !body || !meetingType) {
@@ -412,7 +413,7 @@ const SendNotification = async (req, res) => {
       return res.status(400).json({ error: "Invalid phoneNumbers format" });
     }
     const allowedMeetingTypes = ['meeting', 'task','normal'];
-
+    
     
     // Check if meetingType is empty or not in the allowed types
     if (!allowedMeetingTypes.includes(meetingType) || meetingType === '') {
