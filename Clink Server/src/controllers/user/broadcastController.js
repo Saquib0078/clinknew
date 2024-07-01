@@ -165,7 +165,7 @@ const getBroadcast = async (req, res) => {
         num,
       });
 
-      delete broadcast["_id"];
+      // delete broadcast["_id"];
       delete broadcast["__v"];
 
       broadcast.isLiked = !!isLiked;
