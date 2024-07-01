@@ -5,6 +5,7 @@ const broadcastSchema = new mongoose.Schema({
     broadcastID: {type: String},  // Changed to array of strings
     num: {type: String, required: true, maxLength: 10},
     description: {type: String, required: false},
+    mainBroadcastId: String,
     likes: {type: Number, default: 0},
     comments: {type: Number, default: 0},
     time: {type: String, required: true},
