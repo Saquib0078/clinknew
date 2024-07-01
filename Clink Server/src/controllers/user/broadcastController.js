@@ -117,9 +117,9 @@ const updateBroadcast = async (req, res) => {
 
 const getBroadcastById = async (req, res) => {
   try {
-    const broadcastId = req.params.id;
+    const broadcastId = req.params.broadcastID;
     
-    let broadcast = await BroadcastModel.findOne({ _id: broadcastId });
+    let broadcast = await BroadcastModel.findOne({ broadcastID: broadcastId });
 if (!broadcast) {
   broadcast = await BroadcastModel.findById(broadcastId);
 }
@@ -165,7 +165,7 @@ const getBroadcast = async (req, res) => {
         num,
       });
 
-      // delete broadcast["_id"];
+      delete broadcast["_id"];
       delete broadcast["__v"];
 
       broadcast.isLiked = !!isLiked;
@@ -176,7 +176,7 @@ const getBroadcast = async (req, res) => {
         pinnedBroadcasts.push(broadcast);
         continue;
       }
-    
+
       broadcastList.push(broadcast);
     }
   }
