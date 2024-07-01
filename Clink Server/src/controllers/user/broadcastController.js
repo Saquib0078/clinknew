@@ -117,9 +117,9 @@ const updateBroadcast = async (req, res) => {
 
 const getBroadcastById = async (req, res) => {
   try {
-    const broadcastId = req.params.broadcastID;
+    const broadcastId = req.params.id;
     
-    let broadcast = await BroadcastModel.findOne({ broadcastID: broadcastId });
+    let broadcast = await BroadcastModel.findOne({ _id: broadcastId });
 if (!broadcast) {
   broadcast = await BroadcastModel.findById(broadcastId);
 }

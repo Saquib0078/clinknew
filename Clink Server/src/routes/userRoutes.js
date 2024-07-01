@@ -58,7 +58,7 @@ const upload = multer({
 router.post('/controllers/send-notification',upload.single('imageUrl'),verifyJwt,SendNotification)
 router.get('/controllers/getNotification',verifyJwt,getNotification)
 
-router.get("/getBroadcast/:broadcastID", getBroadcastById);
+router.get("/getBroadcast/:id", getBroadcastById);
 
 
 /* Authentication Routes */
