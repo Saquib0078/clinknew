@@ -108,7 +108,7 @@ router.get("/controllers/getNetworks", verifyJwt, getNetworksNotification);
 
 router.get("/getBroadcastMedia/:broadcastMediaID", getBroadcastMedia);
 
-router.post("/controllers/publishBroadcast/:type", verifyJwt, upload.upload('media'), publishBroadcast);
+router.post("/controllers/publishBroadcast/:type", verifyJwt, upload.('media'), publishBroadcast);
 router.put("/controllers/publishBroadcast/:broadcastID", upload.single('media'), updateBroadcast);
 
 
