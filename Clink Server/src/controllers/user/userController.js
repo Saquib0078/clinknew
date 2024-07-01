@@ -386,35 +386,113 @@ const queryUsers = async (req, res) => {
   }
 };
 
+// const SendNotification = async (req, res) => {
+//   try {
+//     let { phoneNumbers, title, body,meetingType } = req.body;
+
+//     const owner = req.user._id;
+//     const image = req.file.filename;
+
+//     console.log(req.body);
+//     console.log(phoneNumbers.phoneNumbers);
+
+//     // phoneNumbers=phoneNumbers["phoneNumbers"]
+
+//     const imageUrl = `http://118.139.167.71:3000/user/getUsermedia/${image}`;
+
+
+//     console.log(imageUrl);
+//     if (!phoneNumbers || !title || !body || !meetingType) {
+//       return res.status(400).json({ error: "Invalid request parameters" });
+//     }
+
+//     // Ensure phoneNumbers is an array of strings
+
+//     if (!Array.isArray(phoneNumbers)) {
+//       phoneNumbers = [phoneNumbers];
+//       return res.status(400).json({ error: "Invalid phoneNumbers format" });
+//     }
+//     const allowedMeetingTypes = ['meeting', 'task','normal'];
+    
+    
+//     // Check if meetingType is empty or not in the allowed types
+//     if (!allowedMeetingTypes.includes(meetingType) || meetingType === '') {
+//       return res.status(400).json({ error: "Invalid meetingType value" });
+//     }
+
+//     // Iterate through each phone number and send a notification to the corresponding topic
+//     for (const phoneNumber of phoneNumbers) {
+//       const topic = phoneNumber.replaceAll('"', "");
+//       if (typeof phoneNumbers === "string") {
+//         phoneNumbers = [phoneNumbers];
+//       }
+//       console.log(topic);
+
+//       const message = {
+//         notification: {
+//           title,
+//           body,
+//         },
+//         data: {
+//           imageUrl,
+//           meetingType,
+//         },
+//         topic,
+//       };
+
+//       await admin.messaging().send(message);
+//     }
+
+//     const notificationId = `${title}-${body}-${Date.now()}`;
+
+//     // Create a new document for the notification
+//     const newNotification = await notificationModel.create({
+//       notificationId,
+//       title,
+//       body,
+//       phoneNumbers,
+//       owner,
+//       imageUrl,
+//       meetingType
+//     });
+
+//     console.log("Notifications sent successfully");
+//     return res.json({
+//       success: true,
+//       message: "Notifications sent successfully",
+//     });
+//   } catch (error) {
+//     console.error("Error sending notifications:", error);
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
+
 const SendNotification = async (req, res) => {
   try {
-    let { phoneNumbers, title, body,meetingType } = req.body;
-
+    let { phoneNumbers, title, body, meetingType } = req.body;
     const owner = req.user._id;
     const image = req.file.filename;
 
     console.log(req.body);
-    console.log(phoneNumbers.phoneNumbers);
 
-    // phoneNumbers=phoneNumbers["phoneNumbers"]
+    // Ensure phoneNumbers is an array
+    if (!Array.isArray(phoneNumbers)) {
+      phoneNumbers = [phoneNumbers];
+    }
+
+    if (phoneNumbers.length === 0) {
+      return res.status(400).json({ error: "No phone numbers provided" });
+    }
 
     const imageUrl = `http://118.139.167.71:3000/user/getUsermedia/${image}`;
-
-
     console.log(imageUrl);
-    if (!phoneNumbers || !title || !body || !meetingType) {
+
+    if (!title || !body || !meetingType) {
       return res.status(400).json({ error: "Invalid request parameters" });
     }
 
-    // Ensure phoneNumbers is an array of strings
+    const allowedMeetingTypes = ['meeting', 'task', 'normal'];
 
-    if (!Array.isArray(phoneNumbers)) {
-      phoneNumbers = [phoneNumbers];
-      return res.status(400).json({ error: "Invalid phoneNumbers format" });
-    }
-    const allowedMeetingTypes = ['meeting', 'task','normal'];
-    
-    
     // Check if meetingType is empty or not in the allowed types
     if (!allowedMeetingTypes.includes(meetingType) || meetingType === '') {
       return res.status(400).json({ error: "Invalid meetingType value" });
@@ -423,9 +501,6 @@ const SendNotification = async (req, res) => {
     // Iterate through each phone number and send a notification to the corresponding topic
     for (const phoneNumber of phoneNumbers) {
       const topic = phoneNumber.replaceAll('"', "");
-      if (typeof phoneNumbers === "string") {
-        phoneNumbers = [phoneNumbers];
-      }
       console.log(topic);
 
       const message = {

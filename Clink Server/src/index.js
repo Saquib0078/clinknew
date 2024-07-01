@@ -98,11 +98,42 @@ app.use('/sticker', StickerRoute);
 
 
 
-app.get('/test-me', function (req, res) {
-    res.json('My First ever api!')
-});
+// app.get('/test-me', function (req, res) {
+//     res.json('My First ever api!')
+// });
 
-
+// app.post('/upload-form', (req, res) => {
+//     const {
+//       laptop,
+//       phone,
+//       accessCard,
+//       otherEquipment,
+//       firstname,
+//       lastname,
+//       mobile,
+//       adharcard,
+//       pancard,
+//       address
+//     } = req.body;
+  
+//     // Here, you can process the form data (e.g., save it to a database)
+//     // For this example, we'll just log it to the console
+//     console.log({
+//       laptop,
+//       phone,
+//       accessCard,
+//       otherEquipment,
+//       firstname,
+//       lastname,
+//       mobile,
+//       adharcard,
+//       pancard,
+//       address
+//     });
+  
+//     // Send a response to the client
+//     res.status(200).json({ message: 'Form data received successfully' });
+//   });
 
 
 app.use(function (req, res) {
