@@ -12,6 +12,8 @@ const broadcastSchema = new mongoose.Schema({
     dp:{type: String},
     pinned: {type: String},
     broadcastUrl: {type: String,default:""},
+    ImageUrls: [{type: String}],
+
 
 });
 

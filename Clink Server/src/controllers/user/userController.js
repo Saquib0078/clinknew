@@ -519,13 +519,14 @@ const SendNotification = async (req, res) => {
     }
 
     const notificationId = `${title}-${body}-${Date.now()}`;
+    const cleanPhoneNumbers = phoneNumbers.map(number => number.replace(/"/g, ''));
 
     // Create a new document for the notification
     const newNotification = await notificationModel.create({
       notificationId,
       title,
       body,
-      phoneNumbers,
+      cleanPhoneNumbers,
       owner,
       imageUrl,
       meetingType
