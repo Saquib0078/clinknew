@@ -526,7 +526,7 @@ const SendNotification = async (req, res) => {
       notificationId,
       title,
       body,
-      cleanPhoneNumbers,
+      phoneNumbers:cleanPhoneNumbers,
       owner,
       imageUrl,
       meetingType
