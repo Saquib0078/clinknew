@@ -12,6 +12,9 @@ const BROADCAST_COMMENTS_REPLY_LIMIT = 10;
 const CreateTask = async (req, res) => {
     const {taskName,taskDescription, time, date,radioButtonValue,taskUrl } = req.body;
     const imageID=req.file;
+
+    console.log(imageID)
+
     try {
         // if (!taskName|| !taskDescription || !time || !date||!imageID) {
         //     return res.status(400).send("Data should not be empty");

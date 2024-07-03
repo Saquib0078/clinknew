@@ -562,7 +562,7 @@ const getNotification = async (req, res) => {
 const getMergedUsers = async (req, res) => {
   try {
     // Extract query parameters from request
-    const { dist, teh, vill, booth, minAge, maxAge, date, gender } = req.query;
+    const { dist, teh, vill, booth, minAge, maxAge, dob, gender } = req.query;
 
     // Build the match object based on the provided query parameters
     const match = {};
@@ -572,24 +572,17 @@ const getMergedUsers = async (req, res) => {
     if (booth) match["secondaryData.booth"] = booth;
     if (gender) match["secondaryData.gender"] = gender;
 
-    // if (minAge) match["secondaryData.age"] = minAge;
-    // if (maxAge) match["secondaryData.age"] = maxAge;
-    if (date) {
-      const [month, day] = date.split('/'); // Assuming the date is in the format "MM/DD"
+    // Handle date of birth query
+    if (dob) {
+      const [queryDay, queryMonth] = dob.split('/'); // Assuming the input is in the format "D/M"
       match["$expr"] = {
-          $and: [
-              { $eq: [{ $month: "$secondaryData.dob" }, parseInt(month)] },
-              { $eq: [{ $dayOfMonth: "$secondaryData.dob" }, parseInt(day)] }
-          ]
+        $and: [
+          { $eq: [{ $arrayElemAt: [{ $split: ["$secondaryData.dob", "/"] }, 0] }, queryDay] },
+          { $eq: [{ $arrayElemAt: [{ $split: ["$secondaryData.dob", "/"] }, 1] }, queryMonth] }
+        ]
       };
-  }
-  
-
-    if (minAge || maxAge) {
-      match["secondaryData.age"] = {};
-      if (minAge) match["secondaryData.age"]["$gte"] = minAge.toString();
-      if (maxAge) match["secondaryData.age"]["$lte"] = maxAge.toString();
     }
+
     console.log("Match Object:", match);
 
     // Aggregate query with $match stage for filtering
@@ -603,15 +596,40 @@ const getMergedUsers = async (req, res) => {
         },
       },
       {
-        $match: match, // Apply filtering based on query parameters
+        $unwind: "$secondaryData"
+      },
+      {
+        $addFields: {
+          dobParts: { $split: ["$secondaryData.dob", "/"] },
+          currentYear: { $year: new Date() }
+        }
+      },
+      {
+        $addFields: {
+          age: {
+            $subtract: [
+              "$currentYear",
+              { $toInt: { $arrayElemAt: ["$dobParts", 2] } } // Year is the third element
+            ]
+          }
+        }
+      },
+      {
+        $match: {
+          $and: [
+            match,
+            ...(minAge ? [{ age: { $gte: parseInt(minAge) } }] : []),
+            ...(maxAge ? [{ age: { $lte: parseInt(maxAge) } }] : [])
+          ]
+        }
       },
       {
         $replaceWith: {
-          $mergeObjects: [{ $arrayElemAt: ["$secondaryData", 0] }, "$$ROOT"],
+          $mergeObjects: ["$secondaryData", "$$ROOT"],
         },
       },
       {
-        $project: { secondaryData: 0 }, // Remove the secondaryData field
+        $project: { secondaryData: 0, dobParts: 0, currentYear: 0 }, // Remove unnecessary fields
       },
     ]);
 
