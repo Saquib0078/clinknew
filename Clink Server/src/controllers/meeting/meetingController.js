@@ -9,6 +9,7 @@ const meeting = async (req, res) => {
         if (!meetName || !meetDescription || !time || !date||!imageID) {
             return res.status(400).send("Data should not be empty");
         }
+        console.log(imageID)
 
         const MeetDetails = {
             meetName,
@@ -36,7 +37,7 @@ const meeting = async (req, res) => {
 const updateMeet = async (req, res) => {
     try {
         const id = req.params.id;
-        const { meetName, meetDescription, meettime, date } = req.body;
+        const { meetName, meetDescription, time, date } = req.body;
         let image;
 
         if (req.file) {
@@ -53,7 +54,7 @@ const updateMeet = async (req, res) => {
         const updateFields = {
             meetName: meetName || existingMeet.meetName,
             meetDescription: meetDescription || existingMeet.meetDescription,
-            meettime: meettime || existingMeet.meettime,
+            time: time || existingMeet.time,
             date: date || existingMeet.date,
             imageID: image || existingMeet.imageID
         };
