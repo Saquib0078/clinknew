@@ -60,6 +60,7 @@ const updateMeet = async (req, res) => {
             radioButtonValue:radioButtonValue ||existingMeet.radioButtonValue
         };
 
+        console.log(updateFields)
         const updatedMeet = await MeetModel.findByIdAndUpdate(id, updateFields, { new: true });
 
         return res.json({ status: "success", data: updatedMeet });
