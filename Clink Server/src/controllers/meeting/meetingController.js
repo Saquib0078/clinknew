@@ -37,7 +37,7 @@ const meeting = async (req, res) => {
 const updateMeet = async (req, res) => {
     try {
         const id = req.params.id;
-        const { meetName, meetDescription, time, date } = req.body;
+        const { meetName, meetDescription, time, date,radioButtonValue } = req.body;
         let image;
 
         if (req.file) {
@@ -56,7 +56,8 @@ const updateMeet = async (req, res) => {
             meetDescription: meetDescription || existingMeet.meetDescription,
             time: time || existingMeet.time,
             date: date || existingMeet.date,
-            imageID: image || existingMeet.imageID
+            imageID: image || existingMeet.imageID,
+            radioButtonValue:radioButtonValue ||existingMeet.radioButtonValue
         };
 
         const updatedMeet = await MeetModel.findByIdAndUpdate(id, updateFields, { new: true });
