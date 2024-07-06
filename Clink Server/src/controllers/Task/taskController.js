@@ -100,7 +100,7 @@ const updateTask = async (req, res) => {
   
         try {
             const id = req.params.id;
-            const { taskName, taskDescription, time, date,taskUrl } = req.body;
+            const { taskName, taskDescription, time, date,taskUrl,radioButtonValue } = req.body;
             let image;
     
             if (req.file) {
@@ -119,7 +119,9 @@ const updateTask = async (req, res) => {
                 time: time || existingtask.time,
                 date: date || existingtask.date,
                 taskUrl: taskUrl || existingtask.taskUrl,
-                imageID: image || existingtask.imageID
+                imageID: image || existingtask.imageID,
+                radioButtonValue:radioButtonValue || existingtask.radioButtonValue
+
             };
 
     
