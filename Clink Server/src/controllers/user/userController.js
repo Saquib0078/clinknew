@@ -469,7 +469,7 @@ const queryUsers = async (req, res) => {
 
 const SendNotification = async (req, res) => {
   try {
-    let { phoneNumbers, title, body, meetingType } = req.body;
+    let { phoneNumbers, title, body, meetingType ,relatedId} = req.body;
     const owner = req.user._id;
     const image = req.file.filename;
 
@@ -511,6 +511,7 @@ const SendNotification = async (req, res) => {
         data: {
           imageUrl,
           meetingType,
+          relatedId:relatedId|| ''
         },
         topic,
       };
@@ -529,7 +530,8 @@ const SendNotification = async (req, res) => {
       phoneNumbers:cleanPhoneNumbers,
       owner,
       imageUrl,
-      meetingType
+      meetingType,
+      relatedId
     });
 
     console.log("Notifications sent successfully");

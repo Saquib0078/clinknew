@@ -10,6 +10,7 @@ const {getIndianTime} = require("../managers/timeManager");
     body: {type:String},
     imageUrl: {type:String},
     meetingType: String,
+    relatedId:String,
     regTime: {type: String, default: getIndianTime()},
     owner:{type: mongoose.Schema.Types.ObjectId,
         ref: 'users'}
