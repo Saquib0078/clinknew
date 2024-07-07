@@ -36,7 +36,7 @@ try {
 
   if(!getOtp) return res.status(400).json({erroe:"No Otps"})
 
-    return res.status(200).json({status:"Success",data:getOtp})
+    return res.status(200).json({status:"Success",otpData:getOtp})
 
 
 
