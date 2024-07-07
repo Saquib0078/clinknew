@@ -120,7 +120,7 @@ const updateTask = async (req, res) => {
                 date: date || existingtask.date,
                 taskUrl: taskUrl || existingtask.taskUrl,
                 imageID: image || existingtask.imageID,
-                // radioButtonValue:radioButtonValue || existingtask.radioButtonValue
+                radioButtonValue:radioButtonValue || existingtask.radioButtonValue
 
             };
 
