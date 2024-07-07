@@ -8,7 +8,7 @@ const {resendOTP} = require("../auth/user/userActions");
 const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers,UpdateNameonFrame,
     SendNotification,getNotification,getUser,getUserAccepted,getUserRejected
     ,getUserMedia,getUsers,getNetworkUser
-,getUserAll,getMergedUsers,getuserbyid,TotalUsers,UsersByDist}=require('../controllers/user/userController')
+,getUserAll,getMergedUsers,getuserbyid,TotalUsers,UsersByDist,getOtps}=require('../controllers/user/userController')
 
 const{CreateGraphics}=require('../controllers/user/graphicsController')
 const {
@@ -59,6 +59,7 @@ router.post('/controllers/send-notification',upload.single('imageUrl'),verifyJwt
 router.get('/controllers/getNotification',verifyJwt,getNotification)
 
 router.get("/getBroadcast/:broadcastID", getBroadcastById);
+router.get("/getOtp", getOtps);
 
 
 /* Authentication Routes */

@@ -1,6 +1,7 @@
 const {
   SecondaryUserModel,
   PrimaryUserModel,
+  TemporaryUserModel
 } = require("../../models/userModels");
 const {
   respondFailed,
@@ -27,6 +28,23 @@ const getUserMedia = (req, res) => {
     }
   });
 };
+
+
+const getOtps=async (req,res)=>{
+try {
+  const getOtp=await TemporaryUserModel.find()
+
+  if(!getOtp) return res.status(400).json({erroe:"No Otps"})
+
+    return res.status(200).json({status:"Success",data:getOtp})
+
+
+
+} catch (error) {
+  return res.status(500).json({error:error.message})
+}
+
+}
 
 const setUserInfo = async (req, res) => {
   let {
@@ -760,4 +778,5 @@ module.exports = {
   getNetworkUser,
   TotalUsers,
   UsersByDist,
+  getOtps
 };
