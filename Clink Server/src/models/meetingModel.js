@@ -8,7 +8,7 @@ const meetSchema = new mongoose.Schema({
     date: {type: String},
     radioButtonValue: { type: String},
     imageID: {type: String},
-    live: {type: Boolean, default: true},
+    live: {type: Boolean, default: false},
     createdBy:{type: mongoose.Schema.Types.ObjectId,
         ref: 'users'}
 
