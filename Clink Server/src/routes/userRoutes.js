@@ -56,9 +56,7 @@ const upload = multer({
 });
 
 
-router.post('/api/shorten',PostUrl)
 
-router.get('/:shortUrl',getUrlById)
 
 router.post('/controllers/send-notification',upload.single('imageUrl'),verifyJwt,SendNotification)
 router.get('/controllers/getNotification',verifyJwt,getNotification)
@@ -102,6 +100,9 @@ router.get('/getUserAll',getMergedUsers)
 router.get('/controllers/getUserAccepted',getUserAccepted)
 router.get('/controllers/getUserRejected',getUserRejected)
 
+router.post('/api/shorten',PostUrl)
+
+router.get('/:shortUrl',getUrlById)
 
 
 // router.get("/user/:broadcastMediaID", getBroadcastMedia);
