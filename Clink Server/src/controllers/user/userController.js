@@ -1,7 +1,8 @@
 const {
   SecondaryUserModel,
   PrimaryUserModel,
-  TemporaryUserModel
+  TemporaryUserModel,
+  Url
 } = require("../../models/userModels");
 const {
   respondFailed,
@@ -12,6 +13,7 @@ const { usersPath } = require("../../managers/fileManager");
 const admin = require("firebase-admin");
 const notificationModel = require("../../models/notificationModel");
 var serviceAccount = require("../../helpers/firebase");
+const { generateRandomID } = require("../../helpers/appHelper");
 
 const getUserMedia = (req, res) => {
   let { userId } = req.params;
@@ -757,6 +759,51 @@ function calculateAge(dob) {
   return age;
 }
 
+
+
+const PostUrl= async (req, res) => {
+  const { originalUrl } = req.body;
+  if (!originalUrl) {
+    return res.status(400).json('Original URL is required');
+  }
+
+  try {
+    let url = await Url.findOne({ originalUrl:originalUrl });
+    if (url) {
+      res.json(url);
+    } else {
+      const shortUrl = generateRandomID();
+      url = new Url({
+        originalUrl,
+        shortUrl
+      });
+      await url.save();
+      res.json(url);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({'Server error':err.message});
+  }
+};
+
+const getUrlById=async (req, res) => {
+  const { shortUrl } = req.params;
+
+  try {
+    const url = await Url.findOne({ shortUrl:shortUrl });
+    if (url) {
+      return res.redirect(url.originalUrl);
+    } else {
+      return res.status(404).json('No URL found');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({'Server error':err.message});
+  }
+};
+
+
+
 module.exports = {
   setUserInfo,
   getUserById,
@@ -778,5 +825,7 @@ module.exports = {
   getNetworkUser,
   TotalUsers,
   UsersByDist,
-  getOtps
+  getOtps,
+  getUrlById,
+  PostUrl
 };

@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const { getIndianTime } = require("../managers/timeManager");
+const { generateRandomID } = require("../helpers/appHelper");
+
 
 /** User Schema for OTP */
 const temporaryUserSchema = new mongoose.Schema({
@@ -73,6 +75,15 @@ const secondaryUserSchema = new mongoose.Schema({
   }, // Facebook URL
 });
 
+const UrlSchema = new mongoose.Schema({
+  originalUrl: { type: String, required: true },
+  shortUrl: { type: String, required: true, default: generateRandomID() },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Url = mongoose.model('Url', UrlSchema);
+
+
 const TemporaryUserModel = new mongoose.model(
   "user-temps",
   temporaryUserSchema
@@ -83,4 +94,4 @@ const SecondaryUserModel = new mongoose.model(
   secondaryUserSchema
 );
 
-module.exports = { TemporaryUserModel, PrimaryUserModel, SecondaryUserModel };
+module.exports = { TemporaryUserModel, PrimaryUserModel, SecondaryUserModel ,Url};

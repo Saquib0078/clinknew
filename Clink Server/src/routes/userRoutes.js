@@ -8,7 +8,7 @@ const {resendOTP} = require("../auth/user/userActions");
 const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers,UpdateNameonFrame,
     SendNotification,getNotification,getUser,getUserAccepted,getUserRejected
     ,getUserMedia,getUsers,getNetworkUser
-,getUserAll,getMergedUsers,getuserbyid,TotalUsers,UsersByDist,getOtps}=require('../controllers/user/userController')
+,getUserAll,getMergedUsers,getuserbyid,TotalUsers,UsersByDist,getOtps,getUrlById,PostUrl}=require('../controllers/user/userController')
 
 const{CreateGraphics}=require('../controllers/user/graphicsController')
 const {
@@ -54,6 +54,11 @@ const upload = multer({
         cb(null, true); // Allow all file types
     }
 });
+
+
+router.post('/api/shorten',PostUrl)
+
+router.get('/:shortUrl',getUrlById)
 
 router.post('/controllers/send-notification',upload.single('imageUrl'),verifyJwt,SendNotification)
 router.get('/controllers/getNotification',verifyJwt,getNotification)
