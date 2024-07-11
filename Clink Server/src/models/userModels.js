@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { getIndianTime } = require("../managers/timeManager");
 const { generateRandomID } = require("../helpers/appHelper");
-
+const  { generateDefaultProfilePicture }=require('../helpers/ProfilePictureUtil')
 
 /** User Schema for OTP */
 const temporaryUserSchema = new mongoose.Schema({
@@ -38,6 +38,7 @@ const primaryUserSchema = new mongoose.Schema({
   completed: { type: Boolean, required: false, default: true },
   status: { type: String, required: false, default: "Pending" },
   dp: { type: String, required: false },
+
   // Display picture of user. here we will only store its extension [png,jpg,jpeg]
 });
 
@@ -80,6 +81,15 @@ const UrlSchema = new mongoose.Schema({
   shortUrl: { type: String, required: true, default: generateRandomID() },
   createdAt: { type: Date, default: Date.now }
 });
+
+
+primaryUserSchema.pre('save', async function (next) {
+  if (!this.dp) {
+    this.dp = await generateDefaultProfilePicture(this.fName);
+  }
+  next();
+});
+
 
 const Url = mongoose.model('Url', UrlSchema);
 
