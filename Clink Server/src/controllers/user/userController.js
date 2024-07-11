@@ -531,7 +531,8 @@ const SendNotification = async (req, res) => {
         data: {
           imageUrl,
           meetingType,
-          relatedId:relatedId|| ''
+          relatedId:relatedId|| '',
+          sound: "iphone" 
         },
         topic,
       };
