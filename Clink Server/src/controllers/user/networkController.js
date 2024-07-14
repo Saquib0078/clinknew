@@ -1,6 +1,6 @@
 const {PrimaryUserModel} = require("../../models/userModels");
 const {throwError, respondSuccessWithData} = require("../../managers/responseManager");
-const NETWORK_LIMIT = 9;
+const NETWORK_LIMIT = 100000;
 
 
 //TODO
