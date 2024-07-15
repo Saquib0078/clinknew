@@ -46,29 +46,43 @@ const getBroadcastMedia = (req, res) => {
   });
 };
 
+
 const publishBroadcast = async (req, res) => {
   try {
-    let {id, type, description, broadcastUrl } = req.body;
+    let { type, description, broadcastUrl } = req.body;
     let num = req.user.num;
-    
-    // Get the filenames of uploaded images
-    let imageIds = req.files.map(file => file.filename);
 
-    // Generate a random ID for the main broadcastID
-    // let mainBroadcastId = generateRandomID();
-  
-    // Combine the main ID with image IDs
-    // let broadcastID = [ ...imageIds];
+    // Function to remove file extension
+    const removeFileExtension = (filename) => {
+      return filename.replace(/\.[^/.]+$/, "");
+    };
 
-    let broadcast = new BroadcastModel({
-      broadcastID:id,  // This will be an array now
+    // Generate a random ID if no image is uploaded
+    let broadcastID = req.files && req.files.length > 0 
+      ? removeFileExtension(req.files[0].filename) 
+      : generateRandomID();
+
+    // Get the filenames of uploaded images (if any) and remove extensions
+    let imageIds = req.files ? req.files.map(file => removeFileExtension(file.filename)) : [];
+
+    // If no files are uploaded, set the type to 'general'
+    if (!req.files || req.files.length === 0) {
+      type = 'general';
+    }
+
+    // Create the broadcast object with only the provided fields
+    let broadcastData = {
+      broadcastID,
       num,
-      description,
-      type,
-      broadcastUrl,
-      ImageUrls:imageIds,
       time: getIndianTime(),
-    });
+    };
+
+    if (type) broadcastData.type = type;
+    if (description) broadcastData.description = description;
+    if (broadcastUrl) broadcastData.broadcastUrl = broadcastUrl;
+    if (imageIds.length > 0) broadcastData.ImageUrls = imageIds;
+
+    let broadcast = new BroadcastModel(broadcastData);
 
     // Save the broadcast
     await broadcast.save();
@@ -79,6 +93,37 @@ const publishBroadcast = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while publishing the broadcast' });
   }
 };
+
+
+
+
+// const publishBroadcast = async (req, res) => {
+//   try {
+//     let {id, type, description, broadcastUrl } = req.body;
+//     let num = req.user.num;
+    
+//     // Get the filenames of uploaded images
+//     let imageIds = req.files.map(file => file.filename);
+
+//     let broadcast = new BroadcastModel({
+//       broadcastID:id,  // This will be an array now
+//       num,
+//       description,
+//       type,
+//       broadcastUrl,
+//       ImageUrls:imageIds,
+//       time: getIndianTime(),
+//     });
+
+//     // Save the broadcast
+//     await broadcast.save();
+
+//     respondSuccess(res);
+//   } catch (error) {
+//     console.error('Error in publishBroadcast:', error);
+//     res.status(500).json({ error: 'An error occurred while publishing the broadcast' });
+//   }
+// };
 
 // const publishBroadcast = (req, res) => {
 //   let {id, type, description} = req.body;
