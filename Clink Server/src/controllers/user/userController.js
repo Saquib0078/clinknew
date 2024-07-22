@@ -524,21 +524,33 @@ const SendNotification = async (req, res) => {
       console.log(topic);
 
       const message = {
-        notification: {
-          title,
-          body,
-        },
-        data: {
-          imageUrl,
-          meetingType,
-          relatedId:relatedId|| '',
-          sound: "iphone" 
-        },
-        topic,
-      };
-
+      //   notification: {
+      //     title,
+      //     body,
+      //   },
+      //   data: {
+      //     imageUrl,
+      //     meetingType,
+      //     relatedId:relatedId|| '',
+      //     sound: "iphone" 
+      //   },
+      //   topic,
+      // };
+      data: {
+        title,
+        body,
+        imageUrl,
+        meetingType,
+        relatedId:relatedId|| '',
+        sound: "iphone" ,
+      
+      },
+      topic:topic,
+    }
+    console.log(message)
       await admin.messaging().send(message);
     }
+    
 
     const notificationId = `${title}-${body}-${Date.now()}`;
     const cleanPhoneNumbers = phoneNumbers.map(number => number.replace(/"/g, ''));
