@@ -2,7 +2,8 @@ const {
   SecondaryUserModel,
   PrimaryUserModel,
   TemporaryUserModel,
-  Url
+  Url,
+  Role
 } = require("../../models/userModels");
 const {
   respondFailed,
@@ -30,6 +31,27 @@ const getUserMedia = (req, res) => {
     }
   });
 };
+
+
+const postRole=async (req, res) => {
+  try {
+    const { name } = req.body;
+    const newRole = new Role({ name });
+    const savedRole = await newRole.save();
+    res.status(201).json(savedRole);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+const getRoles=async (req, res) => {
+  try {
+    const roles = await Role.find();
+    res.status(200).json({status:"success",role:roles});
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 
 const getOtps=async (req,res)=>{
@@ -158,7 +180,7 @@ const UpdateUser = async (req, res) => {
   try {
     const userId = req.params.id;
     const updatedFields = req.body;
-
+     
     const user = await SecondaryUserModel.findByIdAndUpdate(
       userId,
       updatedFields,
@@ -167,7 +189,7 @@ const UpdateUser = async (req, res) => {
         upsert: true,
       }
     );
-
+    
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -597,7 +619,7 @@ const getNotification = async (req, res) => {
 const getMergedUsers = async (req, res) => {
   try {
     // Extract query parameters from request
-    const { dist, teh, vill, booth, minAge, maxAge, dob, gender } = req.query;
+    const { dist, teh, vill, booth, minAge, maxAge, dob, gender,role } = req.query;
 
     // Build the match object based on the provided query parameters
     const match = {};
@@ -606,6 +628,8 @@ const getMergedUsers = async (req, res) => {
     if (vill) match["secondaryData.vill"] = vill;
     if (booth) match["secondaryData.booth"] = booth;
     if (gender) match["secondaryData.gender"] = gender;
+    if (role) match["secondaryData.role"] = role;
+
 
     // Handle date of birth query
     if (dob) {
@@ -840,5 +864,7 @@ module.exports = {
   UsersByDist,
   getOtps,
   getUrlById,
-  PostUrl
+  PostUrl,
+  getRoles,
+  postRole
 };

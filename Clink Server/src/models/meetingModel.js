@@ -9,6 +9,7 @@ const meetSchema = new mongoose.Schema({
     radioButtonValue: { type: String},
     imageID: {type: String},
     live: {type: Boolean, default: false},
+    // limitedUsers: [{ type: String }],
     createdBy:{type: mongoose.Schema.Types.ObjectId,
         ref: 'users'}
 

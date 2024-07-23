@@ -68,6 +68,8 @@ const secondaryUserSchema = new mongoose.Schema({
   age: { type: String, required: false, trim: true },
   bio: { type: String, required: false, trim: true },
   gender: { type: String, required: false, trim: true },
+  role: { type: String, required: false, default:'' },
+
 
 
   owner: {
@@ -90,6 +92,13 @@ primaryUserSchema.pre('save', async function (next) {
   next();
 });
 
+const roleSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+});
+
+// Create Role model
+const Role = mongoose.model('Role', roleSchema);
+
 
 const Url = mongoose.model('Url', UrlSchema);
 
@@ -104,4 +113,4 @@ const SecondaryUserModel = new mongoose.model(
   secondaryUserSchema
 );
 
-module.exports = { TemporaryUserModel, PrimaryUserModel, SecondaryUserModel ,Url};
+module.exports = { TemporaryUserModel, PrimaryUserModel, SecondaryUserModel ,Url,Role};

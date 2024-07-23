@@ -9,6 +9,13 @@ const meeting = async (req, res) => {
         if (!meetName || !meetDescription || !time || !date||!imageID) {
             return res.status(400).send("Data should not be empty");
         }
+
+        // Open for All
+
+        // if (radioButtonValue === 'Limited Users' && (!limitedUsers || !Array.isArray(limitedUsers) || limitedUsers.length === 0)) {
+        //     return res.status(400).send("For limited meetings, provide an array of phone numbers");
+        // }
+
         console.log(imageID)
 
         const MeetDetails = {
@@ -18,7 +25,8 @@ const meeting = async (req, res) => {
             date,
             radioButtonValue,
             imageID:imageID.filename,
-            createdBy:req.user._id
+            createdBy:req.user._id,
+            // limitedUsers: radioButtonValue === 'limited' ? limitedUsers : []
 
         };
 
