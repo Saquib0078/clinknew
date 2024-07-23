@@ -1,5 +1,17 @@
-
+# Node.js dependencies
 node_modules/
+
+# JavaScript package manager directory
 jspm_packages/
-firebase.json/
+
+# Firebase configuration file
+firebase.json
+
+# Environment variables file
 .env
+
+# Optional: Other sensitive or generated files
+.DS_Store
+.idea/
+.vscode/
+*.log
