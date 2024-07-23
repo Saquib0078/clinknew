@@ -21,7 +21,7 @@ const TaskRoute=require('./routes/taskRoutes')
 const GraphicsRouts=require('./routes/graphicsRoutes')
 const StickerRoute=require('./routes/stickerRoutes')
 
-const admin = require("firebase-admin");
+const admin = JSON.parse(process.env.FIREBASE_CONFIG);
 
 
 const databaseManager = require("./managers/databaseManager");
