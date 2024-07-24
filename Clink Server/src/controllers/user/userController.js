@@ -13,7 +13,6 @@ const {
 const { usersPath } = require("../../managers/fileManager");
 const admin = require("firebase-admin");
 const notificationModel = require("../../models/notificationModel");
-var serviceAccount = require("../../helpers/firebase");
 const { generateRandomID } = require("../../helpers/appHelper");
 
 const getUserMedia = (req, res) => {
