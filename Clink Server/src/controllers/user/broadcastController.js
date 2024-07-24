@@ -23,7 +23,7 @@ const BROADCAST_COMMENTS_LIMIT = 10;
 const BROADCAST_COMMENTS_REPLY_LIMIT = 10;
 const admin = require("firebase-admin");
 
-var serviceAccount = require("../../helpers/firebase");
+var serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
