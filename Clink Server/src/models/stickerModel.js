@@ -10,3 +10,4 @@ const stickerSchema = new mongoose.Schema({
 
 module.exports = mongoose.model('Sticker', stickerSchema);
 
+//djfd
