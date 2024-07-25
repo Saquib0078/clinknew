@@ -1,9 +1,8 @@
 const { createCanvas } = require('canvas');
 const fs = require('fs').promises;
 const path = require('path');
-const {usersPath} = require("../managers/fileManager");
+const { usersPath } = require("../managers/fileManager");
 const { generateRandomID } = require("../helpers/appHelper");
-
 
 async function generateDefaultProfilePicture(name, userId, size = 200) {
   const canvas = createCanvas(size, size);
@@ -11,13 +10,11 @@ async function generateDefaultProfilePicture(name, userId, size = 200) {
 
   // Background
   ctx.fillStyle = getRandomColor();
-  ctx.beginPath();
-  ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2, true);
-  ctx.fill();
+  ctx.fillRect(0, 0, size, size);
 
   // Text
   const initial = name.charAt(0).toUpperCase();
-  ctx.font = `${size / 2}px Arial`;
+  ctx.font = `bold ${size / 2}px Arial`;
   ctx.fillStyle = '#FFFFFF';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -27,7 +24,7 @@ async function generateDefaultProfilePicture(name, userId, size = 200) {
   const buffer = canvas.toBuffer('image/png');
 
   // Generate a unique filename
-  const id=generateRandomID()
+  const id = generateRandomID()
   const filename = `${id}_profile.png`;
   const filepath = path.join(usersPath, filename);
 
