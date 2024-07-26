@@ -4,10 +4,12 @@ const router = express.Router();
 const multer = require("multer");
 const {taskPath} = require("../managers/fileManager");
 const {generateRandomID} = require("../helpers/appHelper");
-const{getTaskImage,completedTask,getCompletedUSers,commentTask,replyCommentTask,deleteCommentTask,getTaskCommentReplies,getTaskComments}=require('../controllers/Task/taskController')
+const{getTaskImage,completedTask,getCompletedUSers,commentTask,replyCommentTask,deleteCommentTask,
+    getTaskCommentReplies,getTaskComments,RegisterEmployee}=require('../controllers/Task/taskController')
 const fs = require('fs');
 const { route } = require('./mediaRoutes');
 const {verifyJwt, verifyJwtUnSession} = require("../middleware/jwtAuthMiddleware");
+const { Route53RecoveryReadiness } = require('aws-sdk');
 
 
 const storage = multer.diskStorage({
@@ -26,6 +28,22 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({storage: storage});
+
+
+// router.post("/Employeeregister", upload.fields([
+//     { name: 'aadharCard', maxCount: 1 },
+//     { name: 'panCard', maxCount: 1 },
+//     { name: 'passportPhoto', maxCount: 1 },
+//     { name: 'birthCertificate', maxCount: 1 },
+//   ],RegisterEmployee))
+
+router.post('/Employeeregister', upload.fields([
+    { name: 'aadharCard', maxCount: 1 },
+    { name: 'panCard', maxCount: 1 },
+    { name: 'passportPhoto', maxCount: 1 },
+    { name: 'birthCertificate', maxCount: 1 }
+  ]), RegisterEmployee);
+
 
 router.post("/task",upload.single('imageID'),verifyJwt, CreateTask);
 router.put("/task/:id",upload.single('imageID'), updateTask);

@@ -3,7 +3,7 @@ const {meetingPath} = require("../../managers/fileManager");
 
 
 const meeting = async (req, res) => {
-    const { meetName, meetDescription, time, date,radioButtonValue} = req.body;
+    const { meetName, meetDescription, time, date,radioButtonValue,limitedUsers} = req.body;
     const imageID=req.file;
     try {
         if (!meetName || !meetDescription || !time || !date||!imageID) {
@@ -12,9 +12,9 @@ const meeting = async (req, res) => {
 
         // Open for All
 
-        // if (radioButtonValue === 'Limited Users' && (!limitedUsers || !Array.isArray(limitedUsers) || limitedUsers.length === 0)) {
-        //     return res.status(400).send("For limited meetings, provide an array of phone numbers");
-        // }
+        if (radioButtonValue === 'Limited Users' && (!limitedUsers || !Array.isArray(limitedUsers) || limitedUsers.length === 0)) {
+            return res.status(400).send("For limited meetings, provide an array of phone numbers");
+        }
 
         console.log(imageID)
 
@@ -26,11 +26,10 @@ const meeting = async (req, res) => {
             radioButtonValue,
             imageID:imageID.filename,
             createdBy:req.user._id,
-            // limitedUsers: radioButtonValue === 'limited' ? limitedUsers : []
+            limitedUsers: radioButtonValue === 'Limited Users' ? limitedUsers : []
 
         };
-
-
+        
         const createMeet = await MeetModel.create(MeetDetails);
         return res.status(200).json({ status: "success", data: createMeet,id:createMeet._id });
     } catch (error) {

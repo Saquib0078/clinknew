@@ -1,6 +1,6 @@
 const {taskPath} = require("../../managers/fileManager");
 const {PrimaryUserModel}=require('../../models/userModels')
-const{TaskReplyModel,TaskCommentModel,TaskModel}=require('../../models/taskModel')
+const{TaskReplyModel,TaskCommentModel,TaskModel,Employee}=require('../../models/taskModel')
 const {respondSuccess, respondSuccessWithData, throwError, respondFailed} = require("../../managers/responseManager");
 const {generateRandomID} = require("../../helpers/appHelper");
 const {getIndianTime} = require("../../managers/timeManager");
@@ -9,10 +9,94 @@ const BROADCAST_COMMENTS_LIMIT = 10;
 const BROADCAST_COMMENTS_REPLY_LIMIT = 10;
 
 
+const RegisterEmployee = async (req, res) => {
+  try {
+    const employeeData = {
+      basicInfo: {
+        givenName: req.body.givenName,
+        familyName: req.body.familyName,
+        addressLine: req.body.addressLine,
+        city: req.body.city,
+        postalCode: req.body.postalCode,
+        email: req.body.email,
+        countryCode: req.body.countryCode,
+        phoneNumber: req.body.phoneNumber,
+      },
+      experience: {
+        jobTitle: req.body.jobTitle,
+        company: req.body.company,
+        location: req.body.location,
+        currentlyWorkHere: req.body.currentlyWorkHere === 'true',
+        workFrom: req.body.workFrom,
+        workTo: req.body.workTo,
+        roleDescription: req.body.roleDescription,
+      },
+      education: {
+        school: req.body.school,
+        degree: req.body.degree,
+        fieldOfStudy: req.body.fieldOfStudy,
+        educationFrom: req.body.educationFrom,
+        educationTo: req.body.educationTo,
+        languages: req.body.languages,
+        skills: req.body.skills,
+        websites: req.body.websites,
+        socialNetworks: req.body.socialNetworks,
+      },
+      documents: {
+        aadharCard: req.files['aadharCard'] ? req.files['aadharCard'][0].path : '',
+        panCard: req.files['panCard'] ? req.files['panCard'][0].path : '',
+        passportPhoto: req.files['passportPhoto'] ? req.files['passportPhoto'][0].path : '',
+        birthCertificate: req.files['birthCertificate'] ? req.files['birthCertificate'][0].path : '',
+      },
+      employment: {
+        employmentJobTitle: req.body.employmentJobTitle,
+        department: req.body.department,
+        startDate: req.body.startDate,
+        employmentType: req.body.employmentType,
+        supervisorName: req.body.supervisorName,
+      },
+      legal: {
+        signedContract: req.body.signedContract === 'true',
+        signedNDA: req.body.signedNDA === 'true',
+        handbookAcknowledgment: req.body.handbookAcknowledgment === 'true',
+        taxForms: req.body.taxForms === 'true',
+      },
+      payroll: {
+        bankName: req.body.bankName,
+        bankAccountNumber: req.body.bankAccountNumber,
+        ifscCode: req.body.ifscCode,
+        branchAddress: req.body.branchAddress,
+      },
+      itAccess: {
+        preferredUsername: req.body.preferredUsername,
+        deviceRequirements: req.body.deviceRequirements,
+        softwareRequirements: req.body.softwareRequirements,
+      },
+      companyLogin: {
+        companyEmail: req.body.companyEmail,
+        password: req.body.password, // Note: In a real-world scenario, you should hash this password
+      },
+    };
+
+    const employee = new Employee(employeeData);
+    await employee.save();
+    
+
+    res.status(201).json({ message: 'Employee registered successfully', employeeId: employee._id });
+  } catch (error) {
+    console.error('Error registering employee:', error);
+    res.status(500).json({ message: 'Error registering employee', error: error.message });
+  }
+};
+
 const CreateTask = async (req, res) => {
-    const {taskName,taskDescription, time, date,radioButtonValue,taskUrl } = req.body;
+    const {taskName,taskDescription, time, date,radioButtonValue,taskUrl,limitedUsers } = req.body;
     const imageID=req.file;
 
+
+    if (radioButtonValue === 'Limited Users' && (!limitedUsers || !Array.isArray(limitedUsers) || limitedUsers.length === 0)) {
+        return res.status(400).send("For limited meetings, provide an array of phone numbers");
+    }
     console.log(imageID)
 
     try {
@@ -28,7 +112,9 @@ const CreateTask = async (req, res) => {
             taskUrl,
             radioButtonValue,
             imageID:imageID.filename,
-            createdBy:userid
+            createdBy:userid,
+            limitedUsers: radioButtonValue === 'Limited Users' ? limitedUsers : []
+
 
         };
 
@@ -335,4 +421,5 @@ const getTaskCommentReplies = async (req, res) => {
 }
 
 
-module.exports={CreateTask,getTask,getTaskById,updateTask,deleteTask,getTaskImage,completedTask,getCompletedUSers,commentTask,replyCommentTask,deleteCommentTask,getTaskCommentReplies,getTaskComments}
+module.exports={CreateTask,getTask,getTaskById,updateTask,deleteTask,getTaskImage,completedTask,getCompletedUSers,commentTask,
+    replyCommentTask,deleteCommentTask,getTaskCommentReplies,getTaskComments,RegisterEmployee}

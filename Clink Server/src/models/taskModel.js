@@ -10,6 +10,7 @@ const taskSchema = new mongoose.Schema({
     imageID: {type: String},
     taskUrl: {type: String},
     radioButtonValue: { type: String},
+    limitedUsers: [{ type: String }],
     createdBy:{type: mongoose.Schema.Types.ObjectId,
         ref: 'users'},
         
@@ -44,9 +45,79 @@ const taskCommentReplySchema = new mongoose.Schema({
     time: {type: String, required: true}
 });
 
+const employeeSchema = new mongoose.Schema({
+  basicInfo: {
+    givenName: String,
+    familyName: String,
+    addressLine: String,
+    city: String,
+    postalCode: String,
+    email: String,
+    countryCode: String,
+    phoneNumber: String,
+  },
+  experience: {
+    jobTitle: String,
+    company: String,
+    location: String,
+    currentlyWorkHere: Boolean,
+    workFrom: String,
+    workTo: String,
+    roleDescription: String,
+  },
+  education: {
+    school: String,
+    degree: String,
+    fieldOfStudy: String,
+    educationFrom: String,
+    educationTo: String,
+    languages: String,
+    skills: String,
+    websites: String,
+    socialNetworks: String,
+  },
+  documents: {
+    aadharCard: String,
+    panCard: String,
+    passportPhoto: String,
+    birthCertificate: String,
+  },
+  employment: {
+    employmentJobTitle: String,
+    department: String,
+    startDate: String,
+    employmentType: String,
+    supervisorName: String,
+  },
+  legal: {
+    signedContract: Boolean,
+    signedNDA: Boolean,
+    handbookAcknowledgment: Boolean,
+    taxForms: Boolean,
+  },
+  payroll: {
+    bankName: String,
+    bankAccountNumber: String,
+    ifscCode: String,
+    branchAddress: String,
+  },
+  itAccess: {
+    preferredUsername: String,
+    deviceRequirements: String,
+    softwareRequirements: String,
+  },
+  companyLogin: {
+    companyEmail: String,
+    password: String,
+  },
+});
+
+const Employee = mongoose.model('Employee', employeeSchema);
+
+
 const TaskCommentModel = new mongoose.model("task-comments", taskCommentSchema);
 const TaskReplyModel = new mongoose.model("task-comment-replies", taskCommentReplySchema);
 const TaskModel = new mongoose.model("task", taskSchema);
 module.exports = {
-    TaskCommentModel,TaskReplyModel,TaskModel
+    TaskCommentModel,TaskReplyModel,TaskModel,Employee
 }
