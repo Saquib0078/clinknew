@@ -9,7 +9,6 @@ const{getTaskImage,completedTask,getCompletedUSers,commentTask,replyCommentTask,
 const fs = require('fs');
 const { route } = require('./mediaRoutes');
 const {verifyJwt, verifyJwtUnSession} = require("../middleware/jwtAuthMiddleware");
-const { Route53RecoveryReadiness } = require('aws-sdk');
 
 
 const storage = multer.diskStorage({
