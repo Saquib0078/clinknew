@@ -89,40 +89,76 @@ const RegisterEmployee = async (req, res) => {
   }
 };
 
+// const CreateTask = async (req, res) => {
+//     const {taskName,taskDescription, time, date,radioButtonValue,taskUrl,limitedUsers } = req.body;
+//     const imageID=req.file;
+
+
+//     if (radioButtonValue === 'Limited Users' && (!limitedUsers || !Array.isArray(limitedUsers) || limitedUsers.length === 0)) {
+//         return res.status(400).send("For limited meetings, provide an array of phone numbers");
+//     }
+//     console.log(imageID)
+
+//     try {
+//         // if (!taskName|| !taskDescription || !time || !date||!imageID) {
+//         //     return res.status(400).send("Data should not be empty");
+//         // }
+//       const userid=req.user._id
+//         const taskDetails = {
+//            taskName,
+//            taskDescription,
+//             date,
+//             time,
+//             taskUrl,
+//             radioButtonValue,
+//             imageID:imageID.filename,
+//             createdBy:userid,
+//             limitedUsers: radioButtonValue === 'Limited Users' ? limitedUsers : []
+
+
+//         };
+
+//         const createtask = await TaskModel.create(taskDetails);
+//         return res.status(200).json({ status: "success", data: createtask,id:createtask._id });
+//     } catch (error) {
+//         return res.status(500).json({ error: error.message });
+//     }
+// };
+
 const CreateTask = async (req, res) => {
-    const {taskName,taskDescription, time, date,radioButtonValue,taskUrl,limitedUsers } = req.body;
-    const imageID=req.file;
-
-
-    if (radioButtonValue === 'Limited Users' && (!limitedUsers || !Array.isArray(limitedUsers) || limitedUsers.length === 0)) {
-        return res.status(400).send("For limited meetings, provide an array of phone numbers");
-    }
-    console.log(imageID)
-
-    try {
-        // if (!taskName|| !taskDescription || !time || !date||!imageID) {
-        //     return res.status(400).send("Data should not be empty");
-        // }
-      const userid=req.user._id
-        const taskDetails = {
-           taskName,
-           taskDescription,
-            date,
-            time,
-            taskUrl,
-            radioButtonValue,
-            imageID:imageID.filename,
-            createdBy:userid,
-            limitedUsers: radioButtonValue === 'Limited Users' ? limitedUsers : []
-
-
-        };
-
-        const createtask = await TaskModel.create(taskDetails);
-        return res.status(200).json({ status: "success", data: createtask,id:createtask._id });
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
-    }
+  const {taskName, taskDescription, time, date, radioButtonValue, taskUrl, limitedUsers} = req.body;
+  const imageID = req.file;
+  
+  if (radioButtonValue === 'Limited Users') {
+      if (!limitedUsers) {
+          return res.status(400).send("For limited meetings, provide at least one phone number");
+      }
+      // Ensure limitedUsers is always an array
+      req.body.limitedUsers = Array.isArray(limitedUsers) ? limitedUsers : [limitedUsers];
+  }
+  
+  console.log(imageID);
+  
+  try {
+      const userid = req.user._id;
+      
+      const taskDetails = {
+          taskName,
+          taskDescription,
+          date,
+          time,
+          taskUrl,
+          radioButtonValue,
+          imageID: imageID.filename,
+          createdBy: userid,
+          limitedUsers: radioButtonValue === 'Limited Users' ? req.body.limitedUsers : []
+      };
+      
+      const createtask = await TaskModel.create(taskDetails);
+      return res.status(200).json({ status: "success", data: createtask, id: createtask._id });
+  } catch (error) {
+      return res.status(500).json({ error: error.message });
+  }
 };
 
   const completedTask=async(req,res)=>{
@@ -254,15 +290,36 @@ const getTaskImage = (req, res) => {
   });
 }
 
-const getTask=async(req,res)=>{
+// const getTask=async(req,res)=>{
 
-    try {
-        const taskings = await TaskModel.find().sort({ createdAt: -1 });
-        return res.json({ status: "success",task:taskings });
-    } catch (error) {
-        return res.status(500).json({ error: error.message });
-      }
-}
+//     try {
+//         const taskings = await TaskModel.find().sort({ createdAt: -1 });
+//         return res.json({ status: "success",task:taskings });
+//     } catch (error) {
+//         return res.status(500).json({ error: error.message });
+//       }
+// }
+
+const getTask = async (req, res) => {
+  try {
+      // Assuming the user's phone number is stored in the JWT payload
+      const userPhoneNumber = req.user.num; // Adjust this based on your JWT structure
+console.log(userPhoneNumber)
+      const taskings = await TaskModel.find({
+          $or: [
+              { radioButtonValue: 'Open for All' },
+              {
+                  radioButtonValue: 'Limited Users',
+                  limitedUsers: { $in: [`"${userPhoneNumber}"`, userPhoneNumber] }
+              }
+          ]
+      }).sort({ createdAt: -1 });
+
+      return res.json({ status: "success", task: taskings });
+  } catch (error) {
+      return res.status(500).json({ error: error.message });
+  }
+};
 
 const getTaskById=async(req,res)=>{
     try {

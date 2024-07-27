@@ -50,7 +50,7 @@ router.put("/task/:id",upload.single('imageID'), updateTask);
 router.get("/task/:id", getTaskById);
 // https://github.com/Sohel-Sheikh-Dev/clink-server.git
 
-router.get("/getTask",getTask );
+router.get("/getTask",verifyJwt,getTask );
 // router.put('/updateMeet/:id',updateMeet)
 router.get("/getTask/:broadcastMediaID", getTaskImage);
 router.put('/tasks/:taskId/complete',completedTask)

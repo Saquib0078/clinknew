@@ -2,21 +2,58 @@ const MeetModel=require('../../models/meetingModel')
 const {meetingPath} = require("../../managers/fileManager");
 
 
+// const meeting = async (req, res) => {
+//     const { meetName, meetDescription, time, date,radioButtonValue,limitedUsers} = req.body;
+//     const imageID=req.file;
+//     try {
+//         if (!meetName || !meetDescription || !time || !date||!imageID) {
+//             return res.status(400).send("Data should not be empty");
+//         }
+
+//         // Open for All
+
+//         if (radioButtonValue === 'Limited Users' && (!limitedUsers || !Array.isArray(limitedUsers) || limitedUsers.length === 0)) {
+//             return res.status(400).send("For limited meetings, provide an array of phone numbers");
+//         }
+
+//         console.log(imageID)
+
+//         const MeetDetails = {
+//             meetName,
+//             meetDescription,
+//             time,
+//             date,
+//             radioButtonValue,
+//             imageID:imageID.filename,
+//             createdBy:req.user._id,
+//             limitedUsers: radioButtonValue === 'Limited Users' ? limitedUsers : []
+
+//         };
+        
+//         const createMeet = await MeetModel.create(MeetDetails);
+//         return res.status(200).json({ status: "success", data: createMeet,id:createMeet._id });
+//     } catch (error) {
+//         return res.status(500).json({ error: error.message });
+//     }
+// };
 const meeting = async (req, res) => {
-    const { meetName, meetDescription, time, date,radioButtonValue,limitedUsers} = req.body;
-    const imageID=req.file;
+    const { meetName, meetDescription, time, date, radioButtonValue, limitedUsers } = req.body;
+    const imageID = req.file;
+
     try {
-        if (!meetName || !meetDescription || !time || !date||!imageID) {
+        if (!meetName || !meetDescription || !time || !date || !imageID) {
             return res.status(400).send("Data should not be empty");
         }
 
-        // Open for All
-
-        if (radioButtonValue === 'Limited Users' && (!limitedUsers || !Array.isArray(limitedUsers) || limitedUsers.length === 0)) {
-            return res.status(400).send("For limited meetings, provide an array of phone numbers");
+        if (radioButtonValue === 'Limited Users') {
+            if (!limitedUsers) {
+                return res.status(400).send("For limited meetings, provide at least one phone number");
+            }
+            // Ensure limitedUsers is always an array
+            req.body.limitedUsers = Array.isArray(limitedUsers) ? limitedUsers : [limitedUsers];
         }
 
-        console.log(imageID)
+        console.log(imageID);
 
         const MeetDetails = {
             meetName,
@@ -24,19 +61,17 @@ const meeting = async (req, res) => {
             time,
             date,
             radioButtonValue,
-            imageID:imageID.filename,
-            createdBy:req.user._id,
-            limitedUsers: radioButtonValue === 'Limited Users' ? limitedUsers : []
-
+            imageID: imageID.filename,
+            createdBy: req.user._id,
+            limitedUsers: radioButtonValue === 'Limited Users' ? req.body.limitedUsers : []
         };
-        
+
         const createMeet = await MeetModel.create(MeetDetails);
-        return res.status(200).json({ status: "success", data: createMeet,id:createMeet._id });
+        return res.status(200).json({ status: "success", data: createMeet, id: createMeet._id });
     } catch (error) {
         return res.status(500).json({ error: error.message });
     }
 };
-
   
 
 
@@ -135,15 +170,37 @@ const getMeetImage = (req, res) => {
   });
 }
 
-const getMeet=async(req,res)=>{
+// const getMeet=async(req,res)=>{
 
+//     try {
+//         const meetings = await MeetModel.find().sort({ createdAt: -1 });
+//         return res.json({ status: "success", meeting: meetings });
+//     } catch (error) {
+//         return res.status(500).json({ error: error.message });
+//       }
+
+// }
+
+const getMeet = async (req, res) => {
     try {
-        const meetings = await MeetModel.find().sort({ createdAt: -1 });
+        // Assuming the user's phone number is stored in the JWT payload
+        const userPhoneNumber = req.user.num; // Adjust this based on your JWT structure
+console.log(userPhoneNumber)
+        const meetings = await MeetModel.find({
+            $or: [
+                { radioButtonValue: 'Open for All' },
+                {
+                    radioButtonValue: 'Limited Users',
+                    limitedUsers: { $in: [`"${userPhoneNumber}"`, userPhoneNumber] }
+                }
+            ]
+        }).sort({ createdAt: -1 });
+
         return res.json({ status: "success", meeting: meetings });
     } catch (error) {
         return res.status(500).json({ error: error.message });
-      }
-}
+    }
+};
 
 const getMeetById=async(req,res)=>{
     try {

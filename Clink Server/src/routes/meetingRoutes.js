@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 
 router.post("/meeting",upload.single('imageID'),verifyJwt, meeting);
-router.get("/liveMeetings",getMeet );
+router.get("/liveMeetings",verifyJwt,getMeet );
 router.get("/liveMeetings/:id",getMeetById );
 
 router.put('/updateMeet/:id',upload.single('imageID'),updateMeet)
