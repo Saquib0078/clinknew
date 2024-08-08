@@ -7,7 +7,7 @@ const {verifyJwt, verifyJwtUnSession} = require("../middleware/jwtAuthMiddleware
 const {resendOTP} = require("../auth/user/userActions");
 const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers,UpdateNameonFrame,
     SendNotification,getNotification,getUser,getUserAccepted,getUserRejected
-    ,getUserMedia,getUsers,getNetworkUser
+    ,getUserMedia,getUsers,getNetworkUser,deleteRole
 ,getUserAll,getMergedUsers,getuserbyid,TotalUsers,UsersByDist,getOtps,getUrlById,PostUrl,getRoles,postRole}=require('../controllers/user/userController')
 
 const{CreateGraphics}=require('../controllers/user/graphicsController')
@@ -58,6 +58,8 @@ const upload = multer({
 
 router.get('/getRole',getRoles)
 router.post('/postRole',postRole)
+router.delete('/deleteRole/:id',deleteRole)
+
 
 
 

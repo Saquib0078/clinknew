@@ -43,6 +43,22 @@ const postRole=async (req, res) => {
   }
 }
 
+const deleteRole = async (req, res) => {
+  try {
+    const { id } = req.params; // Assuming role ID is passed as a URL parameter
+    const deletedRole = await Role.findByIdAndDelete(id);
+
+    if (!deletedRole) {
+      return res.status(404).json({ message: "Role not found" });
+    }
+
+    res.status(200).json({ message: "Role deleted successfully", deletedRole });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
+
+
 const getRoles=async (req, res) => {
   try {
     const roles = await Role.find();
@@ -525,7 +541,7 @@ const SendNotification = async (req, res) => {
       return res.status(400).json({ error: "No phone numbers provided" });
     }
 
-    const imageUrl = `http://118.139.167.71:3000/user/getUsermedia/${image}`;
+    const imageUrl = `${process.env.IMAGE_URL}user/getUsermedia/${image}`;
     console.log(imageUrl);
 
     if (!title || !body || !meetingType) {
@@ -865,5 +881,6 @@ module.exports = {
   getUrlById,
   PostUrl,
   getRoles,
-  postRole
+  postRole,
+  deleteRole
 };

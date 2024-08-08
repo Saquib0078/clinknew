@@ -1,5 +1,5 @@
 require('dotenv').config();
-
+const cors=require('cors')
 const express = require('express')
 const compression = require('compression');
 const app = express()
@@ -9,6 +9,18 @@ const server = http.createServer(app);
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
 const moment = require('moment');
+const os =require('os')
+const cluster = require('cluster');
+const numCPUs = os.cpus().length;
+
+
+const corsOptions = {
+    origin: '*', // Allow all origins
+    methods: 'GET, POST, PUT, DELETE, OPTIONS', // Allowed methods
+    allowedHeaders: 'Content-Type, Authorization', // Allowed headers
+  };
+  
+  app.use(cors(corsOptions));
 
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
@@ -140,18 +152,18 @@ app.use(function (req, res) {
     return res.status(404).send({status: false, message: "Path Not Found"})
 });
 
-// if (cluster.isPrimary) {
-//     console.log(`Primary ${process.pid} is running`);
+if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is running`);
   
-//     // Fork workers.
-//     for (let i = 0; i < numCPUs; i++) {
-//       cluster.fork();
-//     }
+    // Fork workers.
+    for (let i = 0; i < numCPUs; i++) {
+      cluster.fork();
+    }
   
-//     cluster.on('exit', (worker, code, signal) => {
-//       console.log(`worker ${worker.process.pid} died`);
-//     });
-//   } else {
+    cluster.on('exit', (worker, code, signal) => {
+      console.log(`worker ${worker.process.pid} died`);
+    });
+  } else {
     
     const port = process.env.PORT || 3000;
     app.listen(port, function () {
@@ -160,8 +172,8 @@ app.use(function (req, res) {
     
      });
     
-    // console.log(`Worker ${process.pid} started`);
- // }
+    console.log(`Worker ${process.pid} started`);
+ }
 
 
 

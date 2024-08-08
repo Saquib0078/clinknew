@@ -13,7 +13,7 @@ const verifyJwt = async (req, res, next, session = true) => {
     if (!token) {
         return respondDeclared(res, MISSING_PARAMETERS_MSG);
     }
-
+    
     token = req.headers.authorization.replace("Bearer ", "");
 
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
