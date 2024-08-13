@@ -7,7 +7,7 @@ const {verifyJwt, verifyJwtUnSession} = require("../middleware/jwtAuthMiddleware
 const {resendOTP} = require("../auth/user/userActions");
 const {getUserById, queryUsers,UpdateUser,UpdateUserPrimary,getUSers,UpdateNameonFrame,
     SendNotification,getNotification,getUser,getUserAccepted,getUserRejected
-    ,getUserMedia,getUsers,getNetworkUser,deleteRole
+    ,getUserMedia,getUsers,getNetworkUser,deleteRole,getNumbers
 ,getUserAll,getMergedUsers,getuserbyid,TotalUsers,UsersByDist,getOtps,getUrlById,PostUrl,getRoles,postRole}=require('../controllers/user/userController')
 
 const{CreateGraphics}=require('../controllers/user/graphicsController')
@@ -62,6 +62,7 @@ router.delete('/deleteRole/:id',deleteRole)
 
 
 
+router.get('/getnum',getNumbers)
 
 
 

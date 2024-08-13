@@ -31,6 +31,20 @@ const getUserMedia = (req, res) => {
   });
 };
 
+const getNumbers=async (req, res) => {
+  try {
+    const phoneNumbers = await PrimaryUserModel.find({}, 'num');
+    // console.log(phoneNumbers)
+    const numbers = phoneNumbers.map(user => user.num);
+    // console.log(numbers)
+
+    res.json(numbers);
+  } catch (error) {
+    console.error('Error fetching phone numbers:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 
 const postRole=async (req, res) => {
   try {
@@ -530,7 +544,7 @@ const SendNotification = async (req, res) => {
     const owner = req.user._id;
     const image = req.file.filename;
 
-    console.log(req.body);
+    // console.log(req.body);
 
     // Ensure phoneNumbers is an array
     if (!Array.isArray(phoneNumbers)) {
@@ -882,5 +896,6 @@ module.exports = {
   PostUrl,
   getRoles,
   postRole,
-  deleteRole
+  deleteRole,
+  getNumbers
 };
